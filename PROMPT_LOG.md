@@ -107,3 +107,13 @@
   Checked working tree status, found no uncommitted changes (branch is 1 commit ahead of origin). Added this prompt as Entry 10 to PROMPT_LOG.md.
 - **Action Taken:**  
   **Accepted as-is.** Working tree was already clean; updated PROMPT_LOG.md with this entry.
+
+---
+
+### Entry 11: Fully Responsive, Adaptive Portfolio with Accessibility & Ergonomics
+- **Prompt:**  
+  > "Act as an expert frontend engineer. Build a fully responsive, adaptive personal portfolio website that delivers an optimal UI/UX across mobile, tablet, desktop, and ultra-wide screens. Key Requirements: Mobile-First Design (fluid CSS Grid, Flexbox, dynamic typography with clamp(), responsive spacing), Adaptive Navigation (sticky/fixed navbar on desktop, accessible hamburger drawer on mobile), Device Ergonomics (minimum 44x44px touch targets, hover effects gated behind @media (hover: hover) queries), Core Components (Hero, Projects, Skills/Experience, Contact grids scaling from 1-column to multi-column), Best Practices (semantic HTML5, zero CLS, accessible ARIA attributes, high contrast ratios). Apply this prompt in my PROMPT_LOG and commit it in my github."
+- **AI Output Summary:**  
+  Enhanced the portfolio with comprehensive responsive, accessibility, and ergonomic improvements. Added fluid typography via clamp() in CSS, gated all hover effects behind @media (hover: hover) and (pointer: fine) queries to prevent sticky touch states, enforced 44x44px minimum touch targets on all interactive elements for mobile, added a skip-to-content link for keyboard/screen-reader users, added semantic ARIA attributes (role, aria-label, aria-expanded, aria-controls, aria-modal) across navbar and modals, improved CLS prevention with aspect-ratio reservation on the hero profile image, added high-contrast mode support via @media (forced-colors), comprehensive reduced-motion support via @media (prefers-reduced-motion: reduce), print stylesheet, and focused-visible ring for keyboard navigation. Updated navbar with proper mobile menu ARIA attributes and touch-friendly sizing.
+- **Action Taken:**  
+  **Accepted as-is.** Applied all changes across app.css, navbar.blade.php, footer.blade.php, app.blade.php, and home.blade.php.
