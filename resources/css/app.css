@@ -395,20 +395,15 @@ html {
 
 /* --- Minimum 44x44px touch target enforcement on mobile --- */
 @media (max-width: 768px) {
-    button,
-    a,
-    [role="button"],
-    input,
-    select,
-    textarea {
-        min-height: 44px;
-    }
-
-    /* Enforce minimum touch area on interactive spans/inline elements */
-    .nav-link,
-    .section-badge,
-    [aria-label] {
-        min-width: 44px;
+    /* Apply to interactive elements but NOT inside the sticky navbar
+       (navbar buttons already have explicit w-11 h-11 sizing) */
+    main button,
+    main a[href],
+    main [role="button"],
+    main input,
+    main select,
+    main textarea,
+    footer a[href] {
         min-height: 44px;
     }
 }
