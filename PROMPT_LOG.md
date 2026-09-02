@@ -87,3 +87,13 @@
   Provided sequential `git add` and `git commit` commands mapped to individual feature milestones.
 - **Action Taken:**  
   **Accepted as-is.** Applied commands step-by-step to build a multi-commit history.
+
+---
+
+### Entry 9: Project Demo & Repository Links, Hero Badge, and Card Link Buttons
+- **Prompt:**  
+  > "in my projects the webdev activities i will provide a link for demo a link in repositories same with the Portfolio website" and "show it in the project the Demo and the github link, not just by clicking the project."
+- **AI Output Summary:**  
+  Added `liveDemoUrl` and `githubUrl` values for the Portfolio Website (`/` demo, `https://github.com/Arold-Reyes/Reyes-Portfolio`) and Web-Dev Activities (`https://ram.infinityfree.me/`, `https://github.com/Arold-Reyes/Reyes-WebDev`). Updated the hero section badge text from "On OJT at DICT" to "IT Student & Instructor". Rendered "Live Demo" and "GitHub" buttons directly on the project cards so links are always visible without opening the detail modal.
+- **Action Taken:**  
+  **Accepted as-is.** Verified the demo/repo buttons display on the project cards for projects with links set, while other projects remain unaffected.

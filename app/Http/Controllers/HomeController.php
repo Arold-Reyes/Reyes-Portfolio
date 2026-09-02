@@ -201,7 +201,7 @@ class HomeController extends Controller
                     '/images/projects/portfolio_img/Portfolio_03.png',
                 ],
                 'liveDemoUrl' => '/',
-                'githubUrl' => null,
+                'githubUrl' => 'https://github.com/Arold-Reyes/Reyes-Portfolio',
             ],
             [
                 'id' => 'lms',
@@ -240,8 +240,8 @@ class HomeController extends Controller
                     '/images/projects/webdev_img/3_dashboard.png',
                     '/images/projects/webdev_img/4_pictures.png',
                 ],
-                'liveDemoUrl' => null,
-                'githubUrl' => null,
+                'liveDemoUrl' => 'https://ram.infinityfree.me/',
+                'githubUrl' => 'https://github.com/Arold-Reyes/Reyes-WebDev',
             ],
             [
                 'id' => 'microsoft-access-database',

@@ -22,7 +22,7 @@
                 <div class="reveal" data-direction="left" style="--reveal-delay: 0.1s">
                     <span class="section-badge mb-6">
                         <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
-                        On OJT at DICT
+                        IT Student &amp; Instructor
                     </span>
                     <h1 class="font-display text-5xl md:text-7xl font-bold leading-[1.05] tracking-tight mb-5 text-gray-900 dark:text-white">
                         Arold <span class="text-accent">Mina<br class="hidden md:block"> Reyes</span>
@@ -299,6 +299,24 @@
                                 <span class="px-2.5 py-1 rounded-full bg-gray-100 dark:bg-slate-700/50 text-gray-600 dark:text-gray-300 text-xs font-medium">{{ $tech }}</span>
                             @endforeach
                         </div>
+                        @if($project['liveDemoUrl'] || $project['githubUrl'])
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                @if($project['liveDemoUrl'])
+                                    <a href="{{ $project['liveDemoUrl'] }}" target="_blank" rel="noopener noreferrer"
+                                       class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-500 text-white text-sm font-semibold shadow-md shadow-emerald-600/20 hover:shadow-emerald-600/40 hover:-translate-y-0.5 transition-all duration-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+                                        Live Demo
+                                    </a>
+                                @endif
+                                @if($project['githubUrl'])
+                                    <a href="{{ $project['githubUrl'] }}" target="_blank" rel="noopener noreferrer"
+                                       class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-slate-700/60 text-gray-700 dark:text-gray-200 text-sm font-semibold hover:bg-gray-200 dark:hover:bg-slate-600/60 hover:-translate-y-0.5 transition-all duration-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.44 9.81 8.21 11.39.6.11.82-.26.82-.58 0-.28-.01-1.02-.02-2-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5.99.11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.95 0-1.31.47-2.39 1.24-3.23-.12-.3-.54-1.53.12-3.18 0 0 1.01-.32 3.3 1.23.96-.27 1.98-.4 3-.4 1.02 0 2.04.13 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.88.12 3.18.77.84 1.24 1.92 1.24 3.23 0 4.62-2.81 5.64-5.49 5.94.43.37.81 1.1.81 2.22 0 1.61-.01 2.9-.01 3.29 0 .32.22.7.83.58C20.56 21.81 24 17.31 24 12 24 5.37 18.63 0 12 0z"/></svg>
+                                        GitHub
+                                    </a>
+                                @endif
+                            </div>
+                        @endif
                         <button type="button"
                                 @click='openModal({{ json_encode($project) }})'
                                 class="mt-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-400 text-white text-sm font-semibold shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 transition-all duration-300 cursor-pointer">
