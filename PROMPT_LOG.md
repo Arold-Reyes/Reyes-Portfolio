@@ -97,3 +97,13 @@
   Added `liveDemoUrl` and `githubUrl` values for the Portfolio Website (`/` demo, `https://github.com/Arold-Reyes/Reyes-Portfolio`) and Web-Dev Activities (`https://ram.infinityfree.me/`, `https://github.com/Arold-Reyes/Reyes-WebDev`). Updated the hero section badge text from "On OJT at DICT" to "IT Student & Instructor". Rendered "Live Demo" and "GitHub" buttons directly on the project cards so links are always visible without opening the detail modal.
 - **Action Taken:**  
   **Accepted as-is.** Verified the demo/repo buttons display on the project cards for projects with links set, while other projects remain unaffected.
+
+---
+
+### Entry 10: Git Commit & Prompt Log Update
+- **Prompt:**  
+  > "create me a git commit in commiting or pushing the changed code i ask also add it to my promptlog the prompt."
+- **AI Output Summary:**  
+  Checked working tree status, found no uncommitted changes (branch is 1 commit ahead of origin). Added this prompt as Entry 10 to PROMPT_LOG.md.
+- **Action Taken:**  
+  **Accepted as-is.** Working tree was already clean; updated PROMPT_LOG.md with this entry.
