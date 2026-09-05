@@ -10,17 +10,7 @@
 
 ## Log Entries
 
-### Entry 1: Remote Repository Tracking & Version Control Configuration
-- **Prompt:**  
-  > "Provide the exact Git commands to link my local Laravel repository to my public GitHub account, set the primary branch to main, and perform the initial upstream tracking push for remote deployment."
-- **AI Output Summary:**  
-  Provided sequential `git remote add origin`, `git branch -M main`, and `git push -u origin main` CLI commands with explanations for remote tracking.
-- **Action Taken:**  
-  **Accepted as-is.** Configured remote tracking to `https://github.com/Arold-Reyes/Reyes-Portfolio` and initialized upstream branch synchronization with GitHub.
-
----
-
-### Entry 2: Base Project Architecture & Personal Context Setup
+### Entry 1: Base Project Architecture & Personal Context Setup
 - **Prompt:**  
   > "Create a complete, modern, responsive single-page scrollable portfolio website ('spaghetti site') for Arold Mina Reyes, an IT student and Technical Instructor, starting from the existing project setup. Include personal profile info (BSIT 4th Year, OJT objective, phone: 09063555720, email: torolreyes0615@gmail.com, location: Poblacion, Pilar, Abra), education (Data Center College of the Philippines - Bangued, Abra High School Main Campus), certifications (TESDA NC II CSS, DICT CAR, CHED SEEDLING), teaching experience (OCTA IT Services, Tagodtod National High School), and categorized technical skills."
 - **AI Output Summary:**  
@@ -30,7 +20,7 @@
 
 ---
 
-### Entry 3: Light/Dark Mode System Implementation
+### Entry 2: Light/Dark Mode System Implementation
 - **Prompt:**  
   > "Implement a fully functional Light Mode and Dark Mode theme system for my portfolio. Add a Sun/Moon toggle button in the sticky top navigation bar with ARIA attributes. Save preference in localStorage under key 'theme' and check window.matchMedia for system preferences. Set Dark theme default to deep navy with slate glassmorphism cards and electric blue accents; Light theme to crisp off-white with pure white glassmorphism cards and cobalt blue accents. Add smooth CSS body transitions."
 - **AI Output Summary:**  
@@ -40,7 +30,7 @@
 
 ---
 
-### Entry 4: Project Screenshot Scanning & Asset Gallery
+### Entry 3: Project Screenshot Scanning & Asset Gallery
 - **Prompt:**  
   > "I have added multiple project screenshot images to my public/images/project assets folder. Please inspect my project directory to locate these image files, then update my project views/components to showcase them in a clean image gallery or carousel section. For the freelance portfolio make it empty, no pictures yet."
 - **AI Output Summary:**  
@@ -50,7 +40,7 @@
 
 ---
 
-### Entry 5: Navbar & Modal Z-Index Stacking Fix
+### Entry 4: Navbar & Modal Z-Index Stacking Fix
 - **Prompt:**  
   > "Fix the UI z-index and positioning issue where clicking on a Project or Certificate item opens a view/modal that overlaps or bleeds under the navbar. Set the Navbar to a lower z-index (z-30 or z-40) and set Project/Certificate view overlay container to a higher z-index (z-50 or z-[9999])."
 - **AI Output Summary:**  
@@ -60,7 +50,7 @@
 
 ---
 
-### Entry 6: Projects Categorization & Filter Tabs
+### Entry 5: Projects Categorization & Filter Tabs
 - **Prompt:**  
   > "Reorganize the Projects section in my portfolio by categorizing all projects into distinct tabs/filters and separate sub-sections (All, Web Projects, Games, Offline / Desktop Apps). Add category tags to project entries, category badges on project cards, and smooth fade-in transitions."
 - **AI Output Summary:**  
@@ -70,7 +60,7 @@
 
 ---
 
-### Entry 7: Badges Category & Cisco PDF Lightbox Viewer
+### Entry 6: Badges Category & Cisco PDF Lightbox Viewer
 - **Prompt:**  
   > "Under certificates I want to add a badge choice (Certificates and Badges). I will paste the badge picture and pdf to public/images/badge. In the portfolio, the picture of the badge will show, and when clicking it, it will display the PDF of it."
 - **AI Output Summary:**  
@@ -80,13 +70,23 @@
 
 ---
 
-### Entry 8: Resume Download & Hero Section CTA Updates
+### Entry 7: Resume Download & Hero Section CTA Updates
 - **Prompt:**  
   > "Update my portfolio's Resume section with primary 'Download Resume' button linking to assets/resume.pdf with target='_blank' and download attribute. Change secondary button to 'View My Work' scrolling to #projects, and remove the download link from top navigation bar."
 - **AI Output Summary:**  
   Reconfigured Hero action buttons to display 'Download Resume' (solid primary button) and 'View My Work' (outlined secondary button) side-by-side using Tailwind flex classes. Updated navbar links accordingly.
 - **Action Taken:**  
   **Accepted as-is.** Tested resume download functionality and verified smooth scroll down to `#projects`.
+
+---
+
+### Entry 8: Remote Repository Tracking & Version Control Configuration
+- **Prompt:**  
+  > "Provide the exact Git commands to link my local Laravel repository to my public GitHub account, set the primary branch to main, and perform the initial upstream tracking push for remote deployment."
+- **AI Output Summary:**  
+  Provided sequential `git remote add origin`, `git branch -M main`, and `git push -u origin main` CLI commands with explanations for remote tracking.
+- **Action Taken:**  
+  **Accepted as-is.** Configured remote tracking to `https://github.com/Arold-Reyes/Reyes-Portfolio` and initialized upstream branch synchronization with GitHub.
 
 ---
 
