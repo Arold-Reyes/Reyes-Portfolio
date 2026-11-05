@@ -15,7 +15,7 @@
     inset: '0',
     width: '100%',
     height: '100%',
-    zIndex: '0',
+    zIndex: '-1',
     pointerEvents: 'none'
   });
   document.body.prepend(canvas);
@@ -82,6 +82,14 @@
     return document.documentElement.classList.contains('dark') ? 1 : 0.45;
   }
 
+  /* Cache the accent color so we don't force a style recalc on every frame */
+  let accent = accentRGB();
+  let rafId = null;
+
+  function refreshAccent() {
+    accent = accentRGB();
+  }
+
   function update() {
     if (prefersReduced) return;
     for (const p of particles) {
@@ -95,7 +103,7 @@
   }
 
   function draw() {
-    const { r, g, b } = accentRGB();
+    const { r, g, b } = accent;
     const scale = alphaScale();
     ctx.clearRect(0, 0, w, h);
     const count = particles.length;
@@ -146,15 +154,46 @@
       ctx.fillStyle = `rgba(${r},${g},${b},${p.opacity * scale})`;
       ctx.fill();
     }
+  }
 
-    requestAnimationFrame(draw);
+  function frame() {
+    if (prefersReduced || document.hidden) {
+      rafId = null;
+      return;
+    }
+    update();
+    draw();
+    rafId = requestAnimationFrame(frame);
+  }
+
+  function start() {
+    if (prefersReduced || document.hidden || rafId !== null) return;
+    rafId = requestAnimationFrame(frame);
   }
 
   resize();
   rebalance();
   draw();
+  start();
 
-  window.addEventListener('resize', () => { resize(); rebalance(); });
+  window.addEventListener('resize', () => {
+    resize();
+    rebalance();
+    draw();
+  });
+
+  /* Re-resolve the accent color when the theme class changes */
+  new MutationObserver(() => {
+    refreshAccent();
+    if (prefersReduced) draw();
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) return;
+    draw();
+    start();
+  });
+
   document.addEventListener('mousemove', (e) => {
     mouse.x = e.clientX;
     mouse.y = e.clientY;
@@ -170,5 +209,6 @@
       particles.push(p);
     }
     rebalance();
+    draw();
   });
 })();

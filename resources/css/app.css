@@ -54,6 +54,15 @@ html.theme-switching *::after {
                 border-color 0.3s ease, box-shadow 0.3s ease !important;
 }
 
+/* Keep native controls (scrollbars, form widgets) in sync with the active theme */
+html {
+    color-scheme: light;
+}
+
+html.dark {
+    color-scheme: dark;
+}
+
 /* Dark theme (default) */
 .dark {
     --accent-h: 200;
@@ -75,21 +84,24 @@ html.theme-switching *::after {
     --ring-accent: rgba(56, 189, 248, 0.5);
 }
 
-/* Constellation canvas — fixed full-screen particle background */
+/* Constellation canvas — fixed full-screen particle background.
+   Sits behind all page content via a negative z-index so that `main` and
+   `footer` do not need their own stacking context. */
 #constellation-canvas {
     position: fixed;
     inset: 0;
     width: 100%;
     height: 100%;
-    z-index: 0;
+    z-index: -1;
     pointer-events: none;
     display: block;
 }
 
-/* Ensure page content sits above the background canvas */
+/* Keep page content above the background canvas without creating a stacking
+   context. A z-index here would trap fixed overlays (project/certificate
+   modals, toasts) inside `main`, letting the sticky navbar paint over them. */
 main, footer {
     position: relative;
-    z-index: 1;
 }
 
 ::selection {
@@ -132,11 +144,20 @@ html {
     -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.glass-nav.is-scrolled {
+    box-shadow: 0 12px 30px -12px rgba(15, 23, 42, 0.35);
 }
 
 .dark .glass-nav {
     background: rgba(15, 23, 42, 0.72);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dark .glass-nav.is-scrolled {
+    box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.6);
 }
 
 /* Display font helper */
@@ -205,10 +226,14 @@ html {
 
 /* Accent gradient text */
 .text-accent {
-    background-image: linear-gradient(to right, #0284c7, #38bdf8);
+    background-image: linear-gradient(to right, #0369a1, #0284c7);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+}
+
+.dark .text-accent {
+    background-image: linear-gradient(to right, #38bdf8, #7dd3fc);
 }
 
 /* Blurred accent background blobs */
@@ -324,6 +349,8 @@ html {
 /* Scrollable preview area inside the modal */
 .modal-body {
     background: rgba(248, 250, 252, 0.55);
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
 .dark .modal-body {
@@ -524,8 +551,79 @@ html {
 /* --- Ensure zero CLS: reserve space for profile image --- */
 .profile-image-wrapper {
     aspect-ratio: 1;
-    width: clamp(14rem, 40vw, 18rem);
+    width: clamp(14rem, 40vw, 19rem);
     container-type: inline-size;
+}
+
+/* Profile photo cards: two staggered polaroid-style prints, back one peeking out */
+.profile-cards {
+    isolation: isolate;
+}
+
+.profile-cards .profile-card {
+    position: absolute;
+    width: 72%;
+    aspect-ratio: 3 / 4;
+    border-radius: 0.75rem;
+    padding: 0.6rem;
+    border: 1px solid var(--card-border);
+    overflow: hidden;
+    background: var(--glass);
+    box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+    transform-origin: 50% 50%;
+    transition: transform 0.45s ease, box-shadow 0.45s ease, filter 0.45s ease;
+}
+
+.profile-cards .profile-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0.45rem;
+}
+
+/* Back card: pushed to the left and turned, so the front card leaves it exposed */
+.profile-cards .profile-card-left {
+    z-index: 1;
+    left: 0;
+    top: 50%;
+    transform: translateY(-48%) rotate(-5deg);
+}
+
+/* Front card: offset right, slightly higher, straight with a soft accent glow */
+.profile-cards .profile-card-right {
+    z-index: 2;
+    right: 0;
+    top: 50%;
+    transform: translateY(-54%) rotate(2.5deg);
+}
+
+/* When a card is in front it steps forward — straight, centered, on top */
+.profile-cards .profile-card.is-front {
+    z-index: 3;
+    transform: translateY(-50%) translateX(10px) scale(1.03);
+    box-shadow: 0 24px 50px -18px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--ring-accent);
+}
+
+.profile-cards .profile-card:not(.is-front) {
+    filter: saturate(0.92) brightness(0.98);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .profile-cards .profile-card:hover {
+        filter: saturate(1) brightness(1);
+    }
+}
+
+.profile-cards .profile-card:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ring-accent), 0 24px 50px -18px rgba(0, 0, 0, 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .profile-cards .profile-card {
+        transition: none;
+    }
 }
 
 /* --- Responsive section padding with fluid spacing --- */
@@ -541,7 +639,7 @@ section {
 }
 
 /* --- Touch-friendly mobile nav overlay --- */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
     .mobile-nav-overlay a {
         min-height: 48px;
         display: flex;
@@ -562,9 +660,11 @@ section[id] {
 
 /* --- Print styles --- */
 @media print {
+    #scroll-progress,
     .glass-nav,
     #constellation-canvas,
     .skip-link,
+    .back-to-top,
     .glow-orb,
     .bg-grid,
     .bg-blob,

@@ -26,7 +26,7 @@
 
         <div style="margin-top: 20px;">
             <h3 style="color: #555555; margin-bottom: 10px;">Message:</h3>
-            <p style="color: #333333; line-height: 1.6; background-color: #f9f9f9; padding: 15px; border-radius: 4px; border-left: 4px solid #4f46e5;">{{ $message }}</p>
+            <p style="color: #333333; line-height: 1.6; background-color: #f9f9f9; padding: 15px; border-radius: 4px; border-left: 4px solid #4f46e5;">{{ $body }}</p>
         </div>
 
         <hr style="border: none; border-top: 1px solid #eeeeee; margin: 30px 0 15px 0;">

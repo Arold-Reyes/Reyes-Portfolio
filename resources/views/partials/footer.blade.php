@@ -42,7 +42,7 @@
             </div>
 
             <p class="text-sm text-gray-500 dark:text-gray-400">
-                &copy; 2026 Arold Mina Reyes. All rights reserved.
+                &copy; {{ date('Y') }} Arold Mina Reyes. All rights reserved. &middot; Last updated {{ now()->format('F Y') }}
             </p>
         </div>
     </div>

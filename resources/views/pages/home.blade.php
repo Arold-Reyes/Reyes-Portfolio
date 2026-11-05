@@ -1,6 +1,76 @@
 @extends('layouts.app')
 
-@section('title', 'Arold Reyes - IT Student & Technical Instructor')
+@section('title', 'Arold Mina Reyes | IT Student & Technical Instructor')
+
+{{--
+    Open Graph / social sharing + structured data.
+    Uses url('/') so the canonical host comes from the actual request;
+    set APP_URL correctly in production so generated links never point at localhost.
+--}}
+@push('head')
+    @php
+        $portfolioUrl = url('/');
+        $portfolioDescription = 'Arold Mina Reyes — IT Student & Technical Instructor based in Abra, Philippines. Explore skills in IT infrastructure, networking, system administration, projects, certifications, and experience.';
+        $portfolioImage = asset('images/og-image.png');
+        $portraitImage = asset('images/profile.jpg');
+    @endphp
+
+    <link rel="canonical" href="{{ $portfolioUrl }}">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Arold Mina Reyes — Portfolio">
+    <meta property="og:title" content="Arold Mina Reyes — IT Student & Technical Instructor">
+    <meta property="og:description" content="{{ $portfolioDescription }}">
+    <meta property="og:url" content="{{ $portfolioUrl }}">
+    <meta property="og:image" content="{{ $portfolioImage }}">
+    <meta property="og:image:alt" content="Arold Mina Reyes — IT Student & Technical Instructor">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="en_PH">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Arold Mina Reyes — IT Student & Technical Instructor">
+    <meta name="twitter:description" content="{{ $portfolioDescription }}">
+    <meta name="twitter:image" content="{{ $portfolioImage }}">
+    <meta name="twitter:image:alt" content="Arold Mina Reyes — IT Student & Technical Instructor">
+
+    <script type="application/ld+json">
+        {!! json_encode([
+            '@context' => 'https://schema.org',
+            '@type' => 'Person',
+            'name' => 'Arold Mina Reyes',
+            'url' => $portfolioUrl,
+            'image' => $portraitImage,
+            'jobTitle' => 'IT Student & Technical Instructor',
+            'description' => $portfolioDescription,
+            'email' => 'mailto:' . $profile['email'],
+            'telephone' => $profile['phoneHref'],
+            'address' => [
+                '@type' => 'PostalAddress',
+                'addressLocality' => 'Pilar',
+                'addressRegion' => 'Abra',
+                'addressCountry' => 'PH',
+            ],
+            'sameAs' => [
+                $profile['github'],
+                $profile['facebook'],
+                $profile['youtube'],
+            ],
+            'alumniOf' => [
+                '@type' => 'CollegeOrUniversity',
+                'name' => 'Data Center College of the Philippines - Bangued',
+            ],
+            'knowsAbout' => [
+                'IT Infrastructure',
+                'Networking',
+                'System Administration',
+                'Computer Systems Servicing',
+                'Web Development',
+                'Game Development',
+            ],
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
+    </script>
+@endpush
 
 @section('content')
 {{-- ============ HOME / HERO ============ --}}
@@ -47,6 +117,12 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
                             View My Work
                         </a>
+                        <a href="#contact"
+                           class="inline-flex items-center gap-2 px-5 py-3.5 rounded-full text-sky-600 dark:text-sky-400 font-semibold hover:-translate-y-1 hover:bg-sky-500/10 transition-all duration-300 ease-in-out"
+                           aria-label="Book a training session — go to contact">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            Book a Training Session
+                        </a>
                     </div>
                     <div class="mt-8 flex items-center justify-center md:justify-start gap-3" role="list" aria-label="Social links">
                         <a href="{{ $profile['github'] }}" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile" role="listitem"
@@ -78,17 +154,68 @@
                 <div class="reveal" data-direction="right" style="--reveal-delay: 0.2s">
                     <div class="glass rounded-[2rem] p-6 md:p-10">
                         @php
-                            $hasHeroImg = file_exists(public_path('images/profile.jpg'));
+                            $heroImages = [];
+                            foreach (['images/profile.jpg', 'images/profile2.JPG'] as $img) {
+                                if (file_exists(public_path($img))) {
+                                    $heroImages[] = asset($img);
+                                }
+                            }
+                            $hasHeroImg = !empty($heroImages);
                         @endphp
                         <div class="profile-image-wrapper mx-auto">
                         @if($hasHeroImg)
-                            <img
-                                src="{{ asset('images/profile.jpg') }}"
-                                alt="Arold Mina Reyes"
-                                class="rounded-2xl w-full h-full object-cover object-center"
-                                width="288" height="288"
-                                fetchpriority="high"
-                            >
+                            @if(count($heroImages) > 1)
+                                <div class="profile-cards relative w-full h-full" x-data="profileCards({{ Js::from($heroImages) }})">
+                                    <button type="button"
+                                            @click="pin(0)"
+                                            @mouseenter="setPreview(0)"
+                                            @mouseleave="clearPreview()"
+                                            @focus="setPreview(0)"
+                                            @blur="clearPreview()"
+                                            :aria-pressed="front === 0 ? 'true' : 'false'"
+                                            aria-label="Bring first profile photo to front"
+                                            class="profile-card profile-card-left"
+                                            :class="{ 'is-front': isFront(0) }">
+                                        <img
+                                            src="{{ $heroImages[0] }}"
+                                            alt=""
+                                            aria-hidden="true"
+                                            width="288" height="288"
+                                            fetchpriority="high"
+                                            decoding="async"
+                                        >
+                                    </button>
+                                    <button type="button"
+                                            @click="pin(1)"
+                                            @mouseenter="setPreview(1)"
+                                            @mouseleave="clearPreview()"
+                                            @focus="setPreview(1)"
+                                            @blur="clearPreview()"
+                                            :aria-pressed="front === 1 ? 'true' : 'false'"
+                                            aria-label="Bring second profile photo to front"
+                                            class="profile-card profile-card-right"
+                                            :class="{ 'is-front': isFront(1) }">
+                                        <img
+                                            src="{{ $heroImages[1] }}"
+                                            alt=""
+                                            aria-hidden="true"
+                                            width="288" height="288"
+                                            decoding="async"
+                                            loading="lazy"
+                                        >
+                                    </button>
+                                    <span class="sr-only" aria-live="polite" x-text="'Portfolio photo ' + (front + 1) + ' of ' + images.length + ' in front'"></span>
+                                </div>
+                            @else
+                                <img
+                                    src="{{ $heroImages[0] }}"
+                                    alt="Arold Mina Reyes"
+                                    class="rounded-2xl w-full h-full object-cover object-center"
+                                    width="288" height="288"
+                                    fetchpriority="high"
+                                    decoding="async"
+                                >
+                            @endif
                         @else
                             <div class="flex items-center justify-center w-full h-full rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-400 text-white text-7xl font-black font-display" aria-label="AR">
                                 AR
@@ -159,24 +286,24 @@
 
             <div class="glass rounded-2xl p-8 space-y-6 flex flex-col justify-center">
                 <div>
-                    <p class="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-1">Location</p>
+                    <p class="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">Location</p>
                     <p class="text-gray-700 dark:text-gray-200 flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-sky-500" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                         Poblacion, Pilar, Abra
                     </p>
                 </div>
                 <div>
-                    <p class="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-1">Phone</p>
-                    <a href="tel:+639063555720" class="text-gray-700 dark:text-gray-200 flex items-center gap-2 hover:text-sky-600 dark:hover:text-sky-400 transition-colors">
+                    <p class="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">Phone</p>
+                    <a href="tel:{{ $profile['phoneHref'] }}" class="text-gray-700 dark:text-gray-200 flex items-center gap-2 hover:text-sky-600 dark:hover:text-sky-400 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-sky-500" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                        09063555720
+                        {{ $profile['phone'] }}
                     </a>
                 </div>
                 <div>
-                    <p class="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-1">Email</p>
-                    <a href="mailto:torolreyes0615@gmail.com" class="text-gray-700 dark:text-gray-200 flex items-center gap-2 hover:text-sky-600 dark:hover:text-sky-400 transition-colors break-all">
+                    <p class="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">Email</p>
+                    <a href="mailto:{{ $profile['email'] }}" class="text-gray-700 dark:text-gray-200 flex items-center gap-2 hover:text-sky-600 dark:hover:text-sky-400 transition-colors break-all">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-sky-500 shrink-0" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                        torolreyes0615@gmail.com
+                        {{ $profile['email'] }}
                     </a>
                 </div>
             </div>
@@ -239,15 +366,18 @@
             <div class="flex justify-center mb-6"><span class="section-badge">Portfolio</span></div>
             <h2 class="font-display text-4xl md:text-5xl font-bold tracking-tight mb-4 text-gray-900 dark:text-white">Projects</h2>
             <p class="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed tracking-wide">
-                A selection of projects I've built — click any card to view details and screenshots.
+                A selection of projects I've built. Filter by category, then open any project to view its details and screenshots.
             </p>
         </div>
 
         {{-- Category filter tabs --}}
-        <div class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-10 reveal">
+        <div class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-10 reveal"
+             role="group" aria-label="Filter projects by category">
             @foreach($projectFilters as $filter)
                 <button type="button"
                         @click="setFilter('{{ $filter['key'] }}')"
+                        :aria-pressed="activeFilter === '{{ $filter['key'] }}' ? 'true' : 'false'"
+                        aria-controls="project-grid"
                         :class="activeFilter === '{{ $filter['key'] }}'
                             ? 'bg-gradient-to-r from-blue-600 to-cyan-400 text-white shadow-lg shadow-blue-600/25 border-transparent'
                             : 'bg-white dark:bg-slate-800/60 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/10 hover:border-sky-500/50 hover:text-sky-600 dark:hover:text-sky-400'"
@@ -257,10 +387,13 @@
             @endforeach
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <p class="sr-only" role="status" aria-live="polite"
+           x-text="'Showing ' + filteredCount + (filteredCount === 1 ? ' project' : ' projects')"></p>
+
+        <div id="project-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($projects as $index => $project)
-                <article class="reveal glass rounded-2xl overflow-hidden flex flex-col w-full h-full transition-all duration-300 ease-in-out hover:-translate-y-1.5"
-                         x-show="isVisible({{ json_encode($project) }})"
+                <article class="reveal glass rounded-2xl overflow-hidden flex flex-col w-full h-full transition-all duration-300 ease-in-out hover:-translate-y-1.5 focus-within:ring-2 focus-within:ring-sky-500/40"
+                         x-show="isVisible(allProjects[{{ $index }}])"
                          x-transition:enter="transition ease-out duration-300"
                          x-transition:enter-start="opacity-0 translate-y-3"
                          x-transition:enter-end="opacity-100 translate-y-0"
@@ -270,41 +403,46 @@
                          data-direction="up" style="--reveal-delay: {{ ($index % 3) * 0.1 }}s">
                     @if($project['thumbnail'])
                         <button type="button"
-                                @click='openModal({{ json_encode($project) }})'
+                                @click='openModal(allProjects[{{ $index }}])'
+                                aria-label="Open {{ $project['title'] }} details"
                                 class="block w-full text-left cursor-pointer group">
-                            <div class="relative aspect-video overflow-hidden">
+                            <span class="relative block aspect-video overflow-hidden">
                                 <img src="{{ $project['thumbnail'] }}" alt="{{ $project['title'] }} screenshot"
                                      class="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
-                                     loading="lazy">
+                                     loading="lazy" decoding="async">
                                 <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-sky-500/90 text-white text-xs font-semibold backdrop-blur">{{ $project['badge'] ?? $project['category'] }}</span>
-                            </div>
+                            </span>
                         </button>
                     @else
                         <button type="button"
-                                @click='openModal({{ json_encode($project) }})'
+                                @click='openModal(allProjects[{{ $index }}])'
+                                aria-label="Open {{ $project['title'] }} details"
                                 class="block w-full text-left cursor-pointer">
-                            <div class="relative aspect-video flex items-center justify-center bg-gradient-to-br from-blue-600/15 to-cyan-400/15 dark:from-blue-500/10 dark:to-cyan-400/10 border-b border-gray-200/60 dark:border-white/10 overflow-hidden">
+                            <span class="relative flex aspect-video items-center justify-center bg-gradient-to-br from-blue-600/15 to-cyan-400/15 dark:from-blue-500/10 dark:to-cyan-400/10 border-b border-gray-200/60 dark:border-white/10 overflow-hidden">
                                 <span class="w-14 h-14 flex items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-400 text-white shadow-lg shadow-blue-600/20">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
                                 </span>
                                 <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-sky-500/90 text-white text-xs font-semibold backdrop-blur">{{ $project['badge'] ?? $project['category'] }}</span>
-                            </div>
+                            </span>
                         </button>
                     @endif
                     <div class="p-6 flex flex-col flex-1">
-                        <button type="button"
-                                @click='openModal({{ json_encode($project) }})'
-                                class="text-left cursor-pointer">
-                            <h3 class="font-display text-lg font-bold tracking-wide text-gray-900 dark:text-white mb-2 hover:text-sky-600 dark:hover:text-sky-400 transition-colors">{{ $project['title'] }}</h3>
-                        </button>
+                        <h3 class="font-display text-lg font-bold tracking-wide text-gray-900 dark:text-white mb-2">
+                            <button type="button"
+                                    @click='openModal(allProjects[{{ $index }}])'
+                                    class="text-left cursor-pointer hover:text-sky-600 dark:hover:text-sky-400 transition-colors">
+                                {{ $project['title'] }}
+                            </button>
+                        </h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">{{ $project['shortDescription'] }}</p>
                         <div class="flex flex-wrap gap-2 mb-5">
                             @foreach($project['technologies'] as $tech)
                                 <span class="px-2.5 py-1 rounded-full bg-gray-100 dark:bg-slate-700/50 text-gray-600 dark:text-gray-300 text-xs font-medium">{{ $tech }}</span>
                             @endforeach
                         </div>
+                        <div class="flex flex-col gap-2 mt-auto">
                         @if($project['liveDemoUrl'] || $project['githubUrl'])
-                            <div class="flex flex-wrap gap-2 mb-4">
+                             <div class="flex flex-wrap items-center gap-2">
                                 @if($project['liveDemoUrl'])
                                     <a href="{{ $project['liveDemoUrl'] }}" target="_blank" rel="noopener noreferrer"
                                        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-500 text-white text-sm font-semibold shadow-md shadow-emerald-600/20 hover:shadow-emerald-600/40 hover:-translate-y-0.5 transition-all duration-300">
@@ -322,7 +460,7 @@
                             </div>
                         @endif
                         <button type="button"
-                                @click='openModal({{ json_encode($project) }})'
+                                @click='openModal(allProjects[{{ $index }}])'
                                 class="mt-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-400 text-white text-sm font-semibold shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 transition-all duration-300 cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 22h4a2 2 0 0 0 2-2V6l-6-6H6a2 2 0 0 0-2 2v4"/><path d="M10 14l2 2 4-4"/><path d="M8 21v-2a3 3 0 0 1 3-3h1"/></svg>
                             View Details &amp; Screenshots
@@ -344,6 +482,11 @@
             </div>
             <h3 class="font-display text-xl font-bold text-gray-800 dark:text-white mb-2">No projects found in this category</h3>
             <p class="text-gray-500 dark:text-gray-400">Try switching to the "All" tab to browse everything.</p>
+            <button type="button"
+                    @click="setFilter('all')"
+                    class="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-sky-500/50 text-sky-600 dark:text-sky-400 text-sm font-semibold hover:bg-sky-500/10 transition-colors">
+                Show all projects
+            </button>
         </div>
     </div>
 
@@ -359,10 +502,10 @@
          x-ref="modal"
          role="dialog" aria-modal="true"
          :aria-label="project ? project.title : 'Project details'"
-         @mousedown="onBackdropClick($event)"
+         @click.self="closeModal()"
          class="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6">
         {{-- Backdrop --}}
-        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-md" aria-hidden="true"></div>
+        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-md" aria-hidden="true" @click="closeModal()"></div>
 
         {{-- Modal card --}}
         <div class="relative w-full max-w-4xl max-h-[92vh] flex flex-col modal-panel rounded-2xl overflow-hidden shadow-2xl"
@@ -385,9 +528,11 @@
             <div class="modal-body flex-1 min-h-0 overflow-y-auto">
                 {{-- Gallery --}}
                 <div class="px-6 sm:px-7 pt-5" x-show="hasImages">
-                    <div class="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-gray-900/40 aspect-video">
+                    <div class="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-gray-900/40 aspect-video"
+                         @touchstart.passive="onTouchStart($event)"
+                         @touchend.passive="onTouchEnd($event)">
                         <img :src="currentImage" :alt="'Screenshot ' + (currentImageIndex + 1) + ' of ' + project?.title"
-                             class="w-full h-full object-contain" loading="lazy">
+                             class="w-full h-full object-contain" loading="lazy" decoding="async">
                         {{-- Prev / Next --}}
                         <template x-if="imageCount > 1">
                             <button type="button" @click.prevent="prevImage()" aria-label="Previous screenshot"
@@ -409,16 +554,15 @@
 
                     {{-- Thumbnails --}}
                     <template x-if="imageCount > 1">
-                        <div class="flex gap-3 mt-4 overflow-x-auto pb-2" role="tablist" aria-label="Screenshot thumbnails">
+                        <div class="flex gap-3 mt-4 overflow-x-auto pb-2" role="group" aria-label="Screenshot thumbnails">
                             <template x-for="(img, i) in project.galleryImages" :key="i">
                                 <button type="button"
                                         @click="setImage(i)"
-                                        :aria-label="'Show screenshot ' + (i + 1)"
-                                        :aria-selected="currentImageIndex === i ? 'true' : 'false'"
-                                        role="tab"
+                                        :aria-label="'Show screenshot ' + (i + 1) + ' of ' + imageCount"
+                                        :aria-pressed="currentImageIndex === i ? 'true' : 'false'"
                                         class="shrink-0 w-20 h-14 rounded-lg overflow-hidden border-2 cursor-pointer transition-colors"
                                         :class="currentImageIndex === i ? 'border-sky-400 dark:border-sky-400' : 'border-transparent opacity-70 hover:opacity-100'">
-                                    <img :src="img" :alt="'Thumbnail ' + (i + 1)" class="w-full h-full object-cover" loading="lazy">
+                                    <img :src="img" :alt="'Thumbnail ' + (i + 1)" class="w-full h-full object-cover" loading="lazy" decoding="async">
                                 </button>
                             </template>
                         </div>
@@ -476,7 +620,7 @@
 </section>
 
 {{-- ============ EXPERIENCE & EDUCATION ============ --}}
-<section id="education-experience" class="section-alt scroll-mt-20 py-24 md:py-28">
+<section id="education-experience" class="scroll-mt-20 py-24 md:py-28">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="reveal text-center mb-16">
             <div class="flex justify-center mb-6"><span class="section-badge">Journey &amp; Foundation</span></div>
@@ -567,7 +711,7 @@
 </section>
 
 {{-- ============ CERTIFICATIONS ============ --}}
-<section id="certifications" class="scroll-mt-20 py-24 md:py-28 relative overflow-hidden" x-data="certViewer()">
+<section id="certifications" class="scroll-mt-20 py-24 md:py-28 relative overflow-hidden" x-data="certViewer({{ Js::from($certifications) }})">
     <div class="absolute -bottom-24 right-1/4 -z-10 w-96 h-96 rounded-full bg-sky-500/10 blur-3xl dark:bg-sky-600/10"></div>
     <div class="glow-orb w-80 h-80 bg-blue-500/10 dark:bg-blue-600/15 top-20 -right-24" aria-hidden="true"></div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -575,45 +719,151 @@
             <div class="flex justify-center mb-6"><span class="section-badge">Milestones</span></div>
             <h2 class="font-display text-4xl md:text-5xl font-bold tracking-tight mb-4 text-gray-900 dark:text-white">Certificates &amp; Webinars</h2>
             <p class="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed tracking-wide">
-                Click any certificate to preview the full document and open or download the official PDF.
+                Browse every certificate and webinar below. Click a card to preview the document and download the official PDF when available.
             </p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            @foreach($certifications as $index => $cert)
+        {{-- Search certificates --}}
+        <div class="max-w-xl mx-auto mb-6 reveal">
+            <label for="cert-search" class="sr-only">Search certificates by title, issuer, or year</label>
+            <div class="relative">
+                <span class="pointer-events-none absolute inset-y-0 left-4 flex items-center text-gray-400 dark:text-gray-500" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </span>
+                <input id="cert-search"
+                       type="search"
+                       x-model="searchQuery"
+                       aria-controls="certification-grid"
+                       placeholder="Search by title, issuer, or year…"
+                       class="w-full rounded-full border border-gray-200 dark:border-white/10 bg-white dark:bg-slate-800/60 py-2.5 pl-11 pr-10 text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/40 transition-colors">
                 <button type="button"
-                        @click='openModal({{ json_encode($cert) }})'
-                        class="reveal glass rounded-2xl p-7 flex flex-col text-left w-full cursor-pointer transition-transform duration-300 ease-in-out hover:-translate-y-1.5 {{ ($cert['featured'] ?? false) ? 'ring-1 ring-sky-400 dark:ring-sky-500' : '' }}"
-                        data-direction="up" style="--reveal-delay: {{ ($index % 3) * 0.1 }}s">
-                    <div class="flex items-start justify-between mb-4">
-                        <span class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-400 text-white shadow-lg shadow-blue-600/20 group-hover:scale-105 transition-transform duration-300 ease-in-out">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
-                        </span>
-                        @if($cert['featured'] ?? false)
-                            <span class="px-2.5 py-1 rounded-full bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300 text-xs font-semibold">Featured</span>
-                        @endif
-                    </div>
-                    @if(isset($cert['badge']))
-                        <span class="self-start mb-3 px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs font-semibold">{{ $cert['badge'] }}</span>
-                    @endif
-                    <h3 class="font-display text-lg font-bold tracking-wide text-gray-900 dark:text-white mb-1">{{ $cert['title'] }}</h3>
-                    @if(isset($cert['subtitle']))
-                        <p class="text-sm font-medium text-sky-600 dark:text-sky-400 mb-1">{{ $cert['subtitle'] }}</p>
-                    @endif
-                    <div class="mt-5 pt-4 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 tracking-wide border-t border-gray-200/60 dark:border-white/10">
-                        <span class="font-medium">{{ $cert['issuer'] }}</span>
-                        <span>{{ $cert['date'] }}</span>
-                    </div>
-                    <span class="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-400 text-white text-sm font-semibold shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 transition-shadow">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 12 5 5 5-5"/><path d="M5 21h14"/></svg>
-                        View Certificate
-                    </span>
+                        x-show="searchQuery"
+                        x-cloak
+                        @click="searchQuery = ''"
+                        aria-label="Clear certificate search"
+                        class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+        </div>
+
+        {{-- Category filter tabs --}}
+        <div class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-10 reveal"
+             role="group" aria-label="Filter certificates by category">
+            @foreach($certificationFilters as $filter)
+                <button type="button"
+                        @click="setFilter('{{ $filter['key'] }}')"
+                        :aria-pressed="activeFilter === '{{ $filter['key'] }}' ? 'true' : 'false'"
+                        aria-controls="certification-grid"
+                        :class="activeFilter === '{{ $filter['key'] }}'
+                            ? 'bg-gradient-to-r from-blue-600 to-cyan-400 text-white shadow-lg shadow-blue-600/25 border-transparent'
+                            : 'bg-white dark:bg-slate-800/60 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/10 hover:border-sky-500/50 hover:text-sky-600 dark:hover:text-sky-400'"
+                        class="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full border text-sm font-semibold transition-all duration-300 ease-in-out cursor-pointer">
+                    {{ $filter['label'] }}
+                    <span :class="activeFilter === '{{ $filter['key'] }}'
+                            ? 'bg-white/20 text-white'
+                            : 'bg-gray-100 dark:bg-slate-700/60 text-gray-500 dark:text-gray-400'"
+                          class="inline-flex items-center justify-center min-w-5 px-1.5 py-0.5 rounded-full text-xs font-bold transition-colors"
+                          x-text="countFor('{{ $filter['key'] }}')"
+                          aria-label="countFor('{{ $filter['key'] }}') certificates"></span>
                 </button>
             @endforeach
         </div>
-    </div>
 
-    {{-- ===== CERTIFICATE / PDF VIEWER MODAL ===== --}}
+        <p class="sr-only" role="status" aria-live="polite"
+           x-text="'Showing ' + filteredCount + (filteredCount === 1 ? ' certificate' : ' certificates') + (searchQuery ? ' matching &quot;' + searchQuery + '&quot;' : '')"></p>
+
+        <div id="certification-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            @foreach($certifications as $index => $cert)
+                <article x-show="isVisible(allCerts[{{ $index }}])"
+                        x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 translate-y-3"
+                        x-transition:enter-end="opacity-100 translate-y-0"
+                        x-transition:leave="transition ease-in duration-200"
+                        x-transition:leave-start="opacity-100"
+                        x-transition:leave-end="opacity-0 scale-95"
+                        class="reveal group glass relative rounded-2xl overflow-hidden flex flex-col w-full transition-transform duration-300 ease-in-out hover:-translate-y-1.5 {{ ($cert['featured'] ?? false) ? 'ring-1 ring-sky-400 dark:ring-sky-500' : '' }}"
+                        data-direction="up" style="--reveal-delay: {{ ($index % 3) * 0.1 }}s">
+                    {{-- Always-visible document preview --}}
+                    <div class="relative w-full h-52 sm:h-56 overflow-hidden border-b border-gray-200/60 dark:border-white/10 bg-slate-100 dark:bg-slate-900/60">
+                        @if(!empty($cert['previewImage']))
+                            <img src="{{ $cert['previewImage'] }}"
+                                 alt="Preview of the {{ $cert['title'] }} certificate"
+                                 loading="lazy" decoding="async"
+                                 class="h-full w-full object-contain p-2.5 transition-transform duration-500 ease-out group-hover:scale-[1.03]">
+                        @else
+                            <div class="h-full w-full flex flex-col items-center justify-center gap-2.5 bg-slate-100 dark:bg-slate-900/60 px-6 text-center">
+                                <span class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-400 text-white shadow-lg shadow-blue-600/20">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                </span>
+                                <span class="font-display text-sm font-semibold tracking-wide text-gray-800 dark:text-white">Protected document</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400 tracking-wide">Open to preview this certificate</span>
+                            </div>
+                        @endif
+
+                        {{-- Hover affordance --}}
+                        <div class="pointer-events-none absolute inset-0 flex items-end justify-end p-3 bg-gradient-to-t from-slate-900/45 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" aria-hidden="true">
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-xs font-semibold text-slate-900 shadow-lg shadow-slate-900/20">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>
+                                Click to preview
+                            </span>
+                        </div>
+
+                        @if($cert['featured'] ?? false)
+                            <span class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-sky-100/95 dark:bg-sky-900/80 text-sky-700 dark:text-sky-300 text-xs font-semibold shadow-sm backdrop-blur">Featured</span>
+                        @endif
+                    </div>
+
+                    <div class="flex flex-col flex-1 p-6">
+                        @if(isset($cert['badge']))
+                            <span class="self-start mb-3 px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs font-semibold">{{ $cert['badge'] }}</span>
+                        @endif
+                        <h3 class="font-display text-lg font-bold tracking-wide text-gray-900 dark:text-white mb-1">{{ $cert['title'] }}</h3>
+                        @if(isset($cert['subtitle']))
+                            <p class="text-sm font-medium text-sky-600 dark:text-sky-400 mb-1">{{ $cert['subtitle'] }}</p>
+                        @endif
+                        <div class="mt-auto pt-4 flex items-center justify-between gap-3 text-sm text-gray-500 dark:text-gray-400 tracking-wide border-t border-gray-200/60 dark:border-white/10">
+                            <span class="min-w-0 font-medium truncate">{{ $cert['issuer'] }}</span>
+                            <span class="shrink-0">{{ $cert['date'] }}</span>
+                        </div>
+                        <span class="mt-4 inline-flex items-center justify-center gap-2 rounded-xl border border-blue-600/30 dark:border-blue-400/30 px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-300 transition-colors duration-300 ease-in-out group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-cyan-400 group-hover:text-white group-hover:border-transparent">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                            View Certificate
+                        </span>
+                    </div>
+
+                    {{-- Full-card click target (keeps the markup valid while preserving the card look) --}}
+                    <button type="button"
+                            @click='openModal(allCerts[{{ $index }}])'
+                            aria-label="View certificate: {{ $cert['title'] }}"
+                            class="absolute inset-0 z-20 rounded-2xl cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-500">
+                        <span class="sr-only">View certificate: {{ $cert['title'] }}</span>
+                    </button>
+                </article>
+            @endforeach
+        </div>
+
+        {{-- Empty state --}}
+        <div x-show="filteredCount === 0"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-cloak
+             class="text-center py-16">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gray-100 dark:bg-slate-800/60 text-gray-400 dark:text-gray-500 mb-5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </div>
+            <h3 class="font-display text-xl font-bold text-gray-800 dark:text-white mb-2">
+                <span x-text="searchQuery ? 'No certificates match &quot;' + searchQuery + '&quot;' : 'No certificates found in this category'"></span>
+            </h3>
+            <p class="text-gray-500 dark:text-gray-400" x-text="searchQuery ? 'Try a different term, or clear the search to browse everything.' : 'Try switching to the All tab to browse everything.'"></p>
+            <button type="button"
+                    @click="resetSearch()"
+                    class="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-sky-500/50 text-sky-600 dark:text-sky-400 text-sm font-semibold hover:bg-sky-500/10 transition-colors">
+                <span x-text="searchQuery ? 'Clear search & show all' : 'Show all certificates'"></span>
+            </button>
+        </div>
+    </div>
     <div x-cloak
          x-show="open"
          x-transition:enter="transition ease-out duration-300"
@@ -625,10 +875,10 @@
          x-ref="modal"
          role="dialog" aria-modal="true"
          :aria-label="cert ? cert.title : 'Certificate viewer'"
-         @mousedown="onBackdropClick($event)"
+         @click.self="closeModal()"
          class="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6">
         {{-- Backdrop --}}
-        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-md" aria-hidden="true"></div>
+        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-md" aria-hidden="true" @click="closeModal()"></div>
 
         {{-- Modal card --}}
         <div class="relative w-full max-w-4xl max-h-[92vh] flex flex-col modal-panel rounded-2xl overflow-hidden shadow-2xl"
@@ -726,22 +976,22 @@
                 <div>
                     <h3 class="font-display text-2xl font-bold tracking-wide mb-7 text-gray-900 dark:text-white">Contact Details</h3>
                     <div class="space-y-6">
-                        <a href="tel:+639063555720" class="flex items-center gap-4 group">
+                        <a href="tel:{{ $profile['phoneHref'] }}" class="flex items-center gap-4 group">
                             <span class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-400 text-white shadow-lg shadow-blue-600/20 group-hover:scale-105 group-hover:shadow-xl transition-all duration-300 ease-in-out">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                             </span>
                             <div>
-                                <p class="text-sm text-gray-400">Phone</p>
-                                <p class="font-semibold text-gray-900 dark:text-white tracking-wide">09063555720</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Phone</p>
+                                <p class="font-semibold text-gray-900 dark:text-white tracking-wide">{{ $profile['phone'] }}</p>
                             </div>
                         </a>
-                        <a href="mailto:torolreyes0615@gmail.com" class="flex items-center gap-4 group">
+                        <a href="mailto:{{ $profile['email'] }}" class="flex items-center gap-4 group">
                             <span class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-400 text-white shadow-lg shadow-blue-600/20 group-hover:scale-105 group-hover:shadow-xl transition-all duration-300 ease-in-out">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                             </span>
                             <div class="min-w-0">
-                                <p class="text-sm text-gray-400">Email</p>
-                                <p class="font-semibold text-gray-900 dark:text-white break-all tracking-wide">torolreyes0615@gmail.com</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Email</p>
+                                <p class="font-semibold text-gray-900 dark:text-white break-all tracking-wide">{{ $profile['email'] }}</p>
                             </div>
                         </a>
                         <div class="flex items-center gap-4">
@@ -749,12 +999,12 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                             </span>
                             <div>
-                                <p class="text-sm text-gray-400">Location</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Location</p>
                                 <p class="font-semibold text-gray-900 dark:text-white tracking-wide">Poblacion, Pilar, Abra</p>
                             </div>
                         </div>
                             <div class="pt-3 border-t border-gray-200 dark:border-white/10">
-                                <p class="text-sm text-gray-400 mb-4">Follow Me</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Follow Me</p>
                                 <div class="flex items-center gap-3" role="list" aria-label="Social media links">
                                     <a href="{{ $profile['github'] }}" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile" role="listitem"
                                        class="social-link flex items-center justify-center w-11 h-11 rounded-full glass text-gray-600 dark:text-gray-300 hover:text-white hover:bg-gradient-to-br hover:from-blue-600 hover:to-cyan-400 transition-all duration-300 ease-in-out">
@@ -775,27 +1025,43 @@
 
                 {{-- Right: contact form --}}
                 <div class="glass rounded-2xl p-6 md:p-8">
-                    <form @submit="submitForm($event)" class="flex flex-col gap-4" novalidate>
+                    <form @submit="submitForm($event)" class="flex flex-col gap-4">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="flex flex-col gap-1">
                                 <label for="name" class="font-medium text-gray-700 dark:text-gray-300">Name</label>
-                                <input type="text" id="name" name="name" required minlength="2" placeholder="Your name" autocomplete="off"
+                                <input type="text" id="name" name="name" required minlength="2" maxlength="255" placeholder="Your name" autocomplete="name"
+                                       :aria-invalid="errors.name ? 'true' : 'false'"
+                                       aria-describedby="name-error"
+                                       @input="clearError('name')"
                                        class="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 px-4 py-3 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 focus:outline-none transition-all duration-300 ease-in-out">
+                                <p id="name-error" x-show="errors.name" x-text="errors.name"
+                                   class="text-sm font-medium text-red-600 dark:text-red-400"></p>
                             </div>
                             <div class="flex flex-col gap-1">
                                 <label for="email" class="font-medium text-gray-700 dark:text-gray-300">Email</label>
-                                <input type="email" id="email" name="email" required placeholder="you@example.com" autocomplete="off"
+                                <input type="email" id="email" name="email" required maxlength="255" placeholder="you@example.com" autocomplete="email"
+                                       :aria-invalid="errors.email ? 'true' : 'false'"
+                                       aria-describedby="email-error"
+                                       @input="clearError('email')"
                                        class="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 px-4 py-3 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 focus:outline-none transition-all duration-300 ease-in-out">
+                                <p id="email-error" x-show="errors.email" x-text="errors.email"
+                                   class="text-sm font-medium text-red-600 dark:text-red-400"></p>
                             </div>
                         </div>
 
                         <div class="flex flex-col gap-1">
                             <label for="message" class="font-medium text-gray-700 dark:text-gray-300">Message</label>
-                            <textarea id="message" name="message" rows="5" required minlength="5" placeholder="Your message"
-                                      class="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 px-3 py-2.5 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:border-sky-500 focus:ring-sky-500 focus:outline-none resize-none"></textarea>
+                            <textarea id="message" name="message" rows="5" required minlength="5" maxlength="5000" placeholder="Your message"
+                                      :aria-invalid="errors.message ? 'true' : 'false'"
+                                      aria-describedby="message-error"
+                                      @input="clearError('message')"
+                                      class="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 px-4 py-3 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 focus:outline-none transition-all duration-300 ease-in-out resize-none"></textarea>
+                            <p id="message-error" x-show="errors.message" x-text="errors.message"
+                               class="text-sm font-medium text-red-600 dark:text-red-400"></p>
                         </div>
 
                         <button type="submit" :disabled="sending"
+                                :aria-busy="sending ? 'true' : 'false'"
                                 class="mt-2 w-full rounded-full bg-gradient-to-r from-blue-600 to-cyan-400 px-4 py-3.5 text-center text-lg font-semibold text-white shadow-lg shadow-blue-600/25 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-600/30 disabled:cursor-not-allowed disabled:opacity-60 transition-all duration-300 ease-in-out">
                             <template x-if="sending">
                                 <span class="inline-flex items-center space-x-2">
@@ -810,22 +1076,45 @@
                                 <span>Send Message</span>
                             </template>
                         </button>
+                        <p class="text-center text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                            Your details are only used to reply to your message.
+                        </p>
                     </form>
                 </div>
             </div>
 
-            {{-- Toast --}}
+            {{-- Toast (teleported to <body> so fixed positioning is viewport-relative) --}}
+            <template x-teleport="body">
             <div x-show="showToast" x-cloak
-                 class="fixed right-4 top-6 z-[99999] flex items-center gap-2 rounded-lg px-4 py-3 font-semibold text-white shadow-xl"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-2 sm:translate-y-0 sm:translate-x-2"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:translate-x-0"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 :role="toastType === 'failure' ? 'alert' : 'status'"
+                 :aria-live="toastType === 'failure' ? 'assertive' : 'polite'"
+                 aria-atomic="true"
+                 @mouseenter="pauseToast()"
+                 @mouseleave="resumeToast()"
+                 @focusin="pauseToast()"
+                 @focusout="resumeToast()"
+                 class="fixed inset-x-4 top-20 sm:inset-x-auto sm:right-6 sm:top-24 z-[99999] flex items-start gap-3 rounded-xl px-4 py-3.5 font-semibold text-white shadow-2xl"
                  :class="{
                      'bg-emerald-500': toastType === 'success',
                      'bg-yellow-500': toastType === 'warning',
                      'bg-red-600': toastType === 'failure'
                  }">
-                <svg x-show="toastType === 'success'" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <svg x-show="toastType !== 'success'" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
-                <span class="text-sm" x-text="toastMessage"></span>
+                <svg x-show="toastType === 'success'" class="h-5 w-5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <svg x-show="toastType !== 'success'" class="h-5 w-5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
+                <span class="text-sm leading-relaxed flex-1" x-text="toastMessage"></span>
+                <button type="button" @click="dismissToast()"
+                        aria-label="Dismiss notification"
+                        class="-mr-2 -mt-2 flex items-center justify-center w-11 h-11 rounded-full text-white/80 hover:text-white hover:bg-white/15 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
             </div>
+            </template>
         </div>
     </div>
 </section>

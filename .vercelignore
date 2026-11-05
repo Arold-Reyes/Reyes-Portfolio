@@ -1,0 +1,38 @@
+# VCS + editor
+.git
+.github
+.idea
+.vscode
+.gitignore
+.gitattributes
+
+# Env / secrets (never deploy)
+.env
+.env.*
+!.env.example
+
+# PHP runtime caches (regenerated)
+.phpunit.result.cache
+storage/logs
+storage/framework/cache
+storage/framework/sessions
+storage/framework/views
+
+# Node
+node_modules
+
+# Build output (generated on Vercel)
+public/build
+public/hot
+
+# Tests / docs / config (not needed at runtime)
+tests
+phpunit.xml
+README.md
+PROMPT_LOG.md
+AGENTS.md
+CLAUDE.md
+postcss.config.js
+
+# NOTE: vendor/ is intentionally NOT ignored — Laravel needs it at runtime.
+# Keep public/certificates, public/images, and public/favicon.ico.
