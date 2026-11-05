@@ -9,10 +9,13 @@ Built with **Laravel 12**, **Tailwind CSS v4**, and **Alpine.js**.
 - Animated hero section with particle/constellation canvas background
 - Project gallery with category filtering, image lightbox, and modal detail view
 - Certificates & webinars with category filtering, always-visible previews, and an embedded PDF viewer
-- Working contact form with validation, rate limiting, and email delivery
-- SEO metadata: canonical URL, Open Graph, Twitter cards, and `Person` structured data
+- Working contact form with validation, rate limiting, database persistence, and email delivery
+- SEO metadata: canonical URL, Open Graph, Twitter cards, a branded 1200×630 share image, and `Person` structured data
 - Generated `sitemap.xml` and `robots.txt` (served through Laravel)
-- Fully responsive layout with accessible mobile navigation, skip link, focus rings, and reduced-motion support
+- Security headers (nosniff, frame protection, referrer policy, permissions policy, HSTS on HTTPS)
+- Fully responsive layout with accessible mobile navigation (focus-trapped menu), skip link, focus rings, live filter announcements, reduced-motion support, and a back-to-top control
+- Keyboard-friendly project and certificate viewers with inline contact-form validation feedback and dismissible status toasts
+- CI workflow that builds assets and runs the test suite on every push
 
 ## Tech Stack
 - Laravel 12 (PHP 8.2+)

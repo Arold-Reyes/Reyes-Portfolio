@@ -54,6 +54,15 @@ html.theme-switching *::after {
                 border-color 0.3s ease, box-shadow 0.3s ease !important;
 }
 
+/* Keep native controls (scrollbars, form widgets) in sync with the active theme */
+html {
+    color-scheme: light;
+}
+
+html.dark {
+    color-scheme: dark;
+}
+
 /* Dark theme (default) */
 .dark {
     --accent-h: 200;
@@ -135,11 +144,20 @@ html {
     -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.glass-nav.is-scrolled {
+    box-shadow: 0 12px 30px -12px rgba(15, 23, 42, 0.35);
 }
 
 .dark .glass-nav {
     background: rgba(15, 23, 42, 0.72);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dark .glass-nav.is-scrolled {
+    box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.6);
 }
 
 /* Display font helper */
@@ -208,10 +226,14 @@ html {
 
 /* Accent gradient text */
 .text-accent {
-    background-image: linear-gradient(to right, #0284c7, #38bdf8);
+    background-image: linear-gradient(to right, #0369a1, #0284c7);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+}
+
+.dark .text-accent {
+    background-image: linear-gradient(to right, #38bdf8, #7dd3fc);
 }
 
 /* Blurred accent background blobs */
@@ -327,6 +349,8 @@ html {
 /* Scrollable preview area inside the modal */
 .modal-body {
     background: rgba(248, 250, 252, 0.55);
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
 .dark .modal-body {
@@ -544,7 +568,7 @@ section {
 }
 
 /* --- Touch-friendly mobile nav overlay --- */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
     .mobile-nav-overlay a {
         min-height: 48px;
         display: flex;
@@ -565,9 +589,11 @@ section[id] {
 
 /* --- Print styles --- */
 @media print {
+    #scroll-progress,
     .glass-nav,
     #constellation-canvas,
     .skip-link,
+    .back-to-top,
     .glow-orb,
     .bg-grid,
     .bg-blob,

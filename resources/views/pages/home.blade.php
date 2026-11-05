@@ -11,7 +11,8 @@
     @php
         $portfolioUrl = url('/');
         $portfolioDescription = 'Arold Mina Reyes — IT Student & Technical Instructor based in Abra, Philippines. Explore skills in IT infrastructure, networking, system administration, projects, certifications, and experience.';
-        $portfolioImage = asset('images/profile.jpg');
+        $portfolioImage = asset('images/og-image.png');
+        $portraitImage = asset('images/profile.jpg');
     @endphp
 
     <link rel="canonical" href="{{ $portfolioUrl }}">
@@ -22,13 +23,16 @@
     <meta property="og:description" content="{{ $portfolioDescription }}">
     <meta property="og:url" content="{{ $portfolioUrl }}">
     <meta property="og:image" content="{{ $portfolioImage }}">
-    <meta property="og:image:alt" content="Arold Mina Reyes">
+    <meta property="og:image:alt" content="Arold Mina Reyes — IT Student & Technical Instructor">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta property="og:locale" content="en_PH">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Arold Mina Reyes — IT Student & Technical Instructor">
     <meta name="twitter:description" content="{{ $portfolioDescription }}">
     <meta name="twitter:image" content="{{ $portfolioImage }}">
+    <meta name="twitter:image:alt" content="Arold Mina Reyes — IT Student & Technical Instructor">
 
     <script type="application/ld+json">
         {!! json_encode([
@@ -36,7 +40,7 @@
             '@type' => 'Person',
             'name' => 'Arold Mina Reyes',
             'url' => $portfolioUrl,
-            'image' => $portfolioImage,
+            'image' => $portraitImage,
             'jobTitle' => 'IT Student & Technical Instructor',
             'description' => $portfolioDescription,
             'email' => 'mailto:' . $profile['email'],
@@ -113,6 +117,12 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
                             View My Work
                         </a>
+                        <a href="#contact"
+                           class="inline-flex items-center gap-2 px-5 py-3.5 rounded-full text-sky-600 dark:text-sky-400 font-semibold hover:-translate-y-1 hover:bg-sky-500/10 transition-all duration-300 ease-in-out"
+                           aria-label="Book a training session — go to contact">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            Book a Training Session
+                        </a>
                     </div>
                     <div class="mt-8 flex items-center justify-center md:justify-start gap-3" role="list" aria-label="Social links">
                         <a href="{{ $profile['github'] }}" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile" role="listitem"
@@ -154,6 +164,7 @@
                                 class="rounded-2xl w-full h-full object-cover object-center"
                                 width="288" height="288"
                                 fetchpriority="high"
+                                decoding="async"
                             >
                         @else
                             <div class="flex items-center justify-center w-full h-full rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-400 text-white text-7xl font-black font-display" aria-label="AR">
@@ -305,15 +316,18 @@
             <div class="flex justify-center mb-6"><span class="section-badge">Portfolio</span></div>
             <h2 class="font-display text-4xl md:text-5xl font-bold tracking-tight mb-4 text-gray-900 dark:text-white">Projects</h2>
             <p class="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed tracking-wide">
-                A selection of projects I've built — click any card to view details and screenshots.
+                A selection of projects I've built. Filter by category, then open any project to view its details and screenshots.
             </p>
         </div>
 
         {{-- Category filter tabs --}}
-        <div class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-10 reveal">
+        <div class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-10 reveal"
+             role="group" aria-label="Filter projects by category">
             @foreach($projectFilters as $filter)
                 <button type="button"
                         @click="setFilter('{{ $filter['key'] }}')"
+                        :aria-pressed="activeFilter === '{{ $filter['key'] }}' ? 'true' : 'false'"
+                        aria-controls="project-grid"
                         :class="activeFilter === '{{ $filter['key'] }}'
                             ? 'bg-gradient-to-r from-blue-600 to-cyan-400 text-white shadow-lg shadow-blue-600/25 border-transparent'
                             : 'bg-white dark:bg-slate-800/60 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/10 hover:border-sky-500/50 hover:text-sky-600 dark:hover:text-sky-400'"
@@ -323,9 +337,12 @@
             @endforeach
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <p class="sr-only" role="status" aria-live="polite"
+           x-text="'Showing ' + filteredCount + (filteredCount === 1 ? ' project' : ' projects')"></p>
+
+        <div id="project-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($projects as $index => $project)
-                <article class="reveal glass rounded-2xl overflow-hidden flex flex-col w-full h-full transition-all duration-300 ease-in-out hover:-translate-y-1.5"
+                <article class="reveal glass rounded-2xl overflow-hidden flex flex-col w-full h-full transition-all duration-300 ease-in-out hover:-translate-y-1.5 focus-within:ring-2 focus-within:ring-sky-500/40"
                          x-show="isVisible(allProjects[{{ $index }}])"
                          x-transition:enter="transition ease-out duration-300"
                          x-transition:enter-start="opacity-0 translate-y-3"
@@ -337,32 +354,36 @@
                     @if($project['thumbnail'])
                         <button type="button"
                                 @click='openModal(allProjects[{{ $index }}])'
+                                aria-label="Open {{ $project['title'] }} details"
                                 class="block w-full text-left cursor-pointer group">
-                            <div class="relative aspect-video overflow-hidden">
+                            <span class="relative block aspect-video overflow-hidden">
                                 <img src="{{ $project['thumbnail'] }}" alt="{{ $project['title'] }} screenshot"
                                      class="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
-                                     loading="lazy">
+                                     loading="lazy" decoding="async">
                                 <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-sky-500/90 text-white text-xs font-semibold backdrop-blur">{{ $project['badge'] ?? $project['category'] }}</span>
-                            </div>
+                            </span>
                         </button>
                     @else
                         <button type="button"
                                 @click='openModal(allProjects[{{ $index }}])'
+                                aria-label="Open {{ $project['title'] }} details"
                                 class="block w-full text-left cursor-pointer">
-                            <div class="relative aspect-video flex items-center justify-center bg-gradient-to-br from-blue-600/15 to-cyan-400/15 dark:from-blue-500/10 dark:to-cyan-400/10 border-b border-gray-200/60 dark:border-white/10 overflow-hidden">
+                            <span class="relative flex aspect-video items-center justify-center bg-gradient-to-br from-blue-600/15 to-cyan-400/15 dark:from-blue-500/10 dark:to-cyan-400/10 border-b border-gray-200/60 dark:border-white/10 overflow-hidden">
                                 <span class="w-14 h-14 flex items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-400 text-white shadow-lg shadow-blue-600/20">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
                                 </span>
                                 <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-sky-500/90 text-white text-xs font-semibold backdrop-blur">{{ $project['badge'] ?? $project['category'] }}</span>
-                            </div>
+                            </span>
                         </button>
                     @endif
                     <div class="p-6 flex flex-col flex-1">
-                        <button type="button"
-                                @click='openModal(allProjects[{{ $index }}])'
-                                class="text-left cursor-pointer">
-                            <h3 class="font-display text-lg font-bold tracking-wide text-gray-900 dark:text-white mb-2 hover:text-sky-600 dark:hover:text-sky-400 transition-colors">{{ $project['title'] }}</h3>
-                        </button>
+                        <h3 class="font-display text-lg font-bold tracking-wide text-gray-900 dark:text-white mb-2">
+                            <button type="button"
+                                    @click='openModal(allProjects[{{ $index }}])'
+                                    class="text-left cursor-pointer hover:text-sky-600 dark:hover:text-sky-400 transition-colors">
+                                {{ $project['title'] }}
+                            </button>
+                        </h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">{{ $project['shortDescription'] }}</p>
                         <div class="flex flex-wrap gap-2 mb-5">
                             @foreach($project['technologies'] as $tech)
@@ -411,6 +432,11 @@
             </div>
             <h3 class="font-display text-xl font-bold text-gray-800 dark:text-white mb-2">No projects found in this category</h3>
             <p class="text-gray-500 dark:text-gray-400">Try switching to the "All" tab to browse everything.</p>
+            <button type="button"
+                    @click="setFilter('all')"
+                    class="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-sky-500/50 text-sky-600 dark:text-sky-400 text-sm font-semibold hover:bg-sky-500/10 transition-colors">
+                Show all projects
+            </button>
         </div>
     </div>
 
@@ -426,10 +452,10 @@
          x-ref="modal"
          role="dialog" aria-modal="true"
          :aria-label="project ? project.title : 'Project details'"
-         @mousedown="onBackdropClick($event)"
+         @click.self="closeModal()"
          class="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6">
         {{-- Backdrop --}}
-        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-md" aria-hidden="true"></div>
+        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-md" aria-hidden="true" @click="closeModal()"></div>
 
         {{-- Modal card --}}
         <div class="relative w-full max-w-4xl max-h-[92vh] flex flex-col modal-panel rounded-2xl overflow-hidden shadow-2xl"
@@ -452,9 +478,11 @@
             <div class="modal-body flex-1 min-h-0 overflow-y-auto">
                 {{-- Gallery --}}
                 <div class="px-6 sm:px-7 pt-5" x-show="hasImages">
-                    <div class="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-gray-900/40 aspect-video">
+                    <div class="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-gray-900/40 aspect-video"
+                         @touchstart.passive="onTouchStart($event)"
+                         @touchend.passive="onTouchEnd($event)">
                         <img :src="currentImage" :alt="'Screenshot ' + (currentImageIndex + 1) + ' of ' + project?.title"
-                             class="w-full h-full object-contain" loading="lazy">
+                             class="w-full h-full object-contain" loading="lazy" decoding="async">
                         {{-- Prev / Next --}}
                         <template x-if="imageCount > 1">
                             <button type="button" @click.prevent="prevImage()" aria-label="Previous screenshot"
@@ -476,16 +504,15 @@
 
                     {{-- Thumbnails --}}
                     <template x-if="imageCount > 1">
-                        <div class="flex gap-3 mt-4 overflow-x-auto pb-2" role="tablist" aria-label="Screenshot thumbnails">
+                        <div class="flex gap-3 mt-4 overflow-x-auto pb-2" role="group" aria-label="Screenshot thumbnails">
                             <template x-for="(img, i) in project.galleryImages" :key="i">
                                 <button type="button"
                                         @click="setImage(i)"
-                                        :aria-label="'Show screenshot ' + (i + 1)"
-                                        :aria-selected="currentImageIndex === i ? 'true' : 'false'"
-                                        role="tab"
+                                        :aria-label="'Show screenshot ' + (i + 1) + ' of ' + imageCount"
+                                        :aria-pressed="currentImageIndex === i ? 'true' : 'false'"
                                         class="shrink-0 w-20 h-14 rounded-lg overflow-hidden border-2 cursor-pointer transition-colors"
                                         :class="currentImageIndex === i ? 'border-sky-400 dark:border-sky-400' : 'border-transparent opacity-70 hover:opacity-100'">
-                                    <img :src="img" :alt="'Thumbnail ' + (i + 1)" class="w-full h-full object-cover" loading="lazy">
+                                    <img :src="img" :alt="'Thumbnail ' + (i + 1)" class="w-full h-full object-cover" loading="lazy" decoding="async">
                                 </button>
                             </template>
                         </div>
@@ -543,7 +570,7 @@
 </section>
 
 {{-- ============ EXPERIENCE & EDUCATION ============ --}}
-<section id="education-experience" class="section-alt scroll-mt-20 py-24 md:py-28">
+<section id="education-experience" class="scroll-mt-20 py-24 md:py-28">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="reveal text-center mb-16">
             <div class="flex justify-center mb-6"><span class="section-badge">Journey &amp; Foundation</span></div>
@@ -642,36 +669,70 @@
             <div class="flex justify-center mb-6"><span class="section-badge">Milestones</span></div>
             <h2 class="font-display text-4xl md:text-5xl font-bold tracking-tight mb-4 text-gray-900 dark:text-white">Certificates &amp; Webinars</h2>
             <p class="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed tracking-wide">
-                Every certificate is previewed below. Click any card to open the full document and download the official PDF.
+                Browse every certificate and webinar below. Click a card to preview the document and download the official PDF when available.
             </p>
         </div>
 
+        {{-- Search certificates --}}
+        <div class="max-w-xl mx-auto mb-6 reveal">
+            <label for="cert-search" class="sr-only">Search certificates by title, issuer, or year</label>
+            <div class="relative">
+                <span class="pointer-events-none absolute inset-y-0 left-4 flex items-center text-gray-400 dark:text-gray-500" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </span>
+                <input id="cert-search"
+                       type="search"
+                       x-model="searchQuery"
+                       aria-controls="certification-grid"
+                       placeholder="Search by title, issuer, or year…"
+                       class="w-full rounded-full border border-gray-200 dark:border-white/10 bg-white dark:bg-slate-800/60 py-2.5 pl-11 pr-10 text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/40 transition-colors">
+                <button type="button"
+                        x-show="searchQuery"
+                        x-cloak
+                        @click="searchQuery = ''"
+                        aria-label="Clear certificate search"
+                        class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+        </div>
+
         {{-- Category filter tabs --}}
-        <div class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-10 reveal">
+        <div class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-10 reveal"
+             role="group" aria-label="Filter certificates by category">
             @foreach($certificationFilters as $filter)
                 <button type="button"
                         @click="setFilter('{{ $filter['key'] }}')"
+                        :aria-pressed="activeFilter === '{{ $filter['key'] }}' ? 'true' : 'false'"
+                        aria-controls="certification-grid"
                         :class="activeFilter === '{{ $filter['key'] }}'
                             ? 'bg-gradient-to-r from-blue-600 to-cyan-400 text-white shadow-lg shadow-blue-600/25 border-transparent'
                             : 'bg-white dark:bg-slate-800/60 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/10 hover:border-sky-500/50 hover:text-sky-600 dark:hover:text-sky-400'"
-                        class="px-4 sm:px-5 py-2.5 rounded-full border text-sm font-semibold transition-all duration-300 ease-in-out cursor-pointer">
+                        class="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full border text-sm font-semibold transition-all duration-300 ease-in-out cursor-pointer">
                     {{ $filter['label'] }}
+                    <span :class="activeFilter === '{{ $filter['key'] }}'
+                            ? 'bg-white/20 text-white'
+                            : 'bg-gray-100 dark:bg-slate-700/60 text-gray-500 dark:text-gray-400'"
+                          class="inline-flex items-center justify-center min-w-5 px-1.5 py-0.5 rounded-full text-xs font-bold transition-colors"
+                          x-text="countFor('{{ $filter['key'] }}')"
+                          aria-label="countFor('{{ $filter['key'] }}') certificates"></span>
                 </button>
             @endforeach
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <p class="sr-only" role="status" aria-live="polite"
+           x-text="'Showing ' + filteredCount + (filteredCount === 1 ? ' certificate' : ' certificates') + (searchQuery ? ' matching &quot;' + searchQuery + '&quot;' : '')"></p>
+
+        <div id="certification-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($certifications as $index => $cert)
-                <button type="button"
-                        @click='openModal(allCerts[{{ $index }}])'
-                        x-show="isVisible(allCerts[{{ $index }}])"
+                <article x-show="isVisible(allCerts[{{ $index }}])"
                         x-transition:enter="transition ease-out duration-300"
                         x-transition:enter-start="opacity-0 translate-y-3"
                         x-transition:enter-end="opacity-100 translate-y-0"
                         x-transition:leave="transition ease-in duration-200"
                         x-transition:leave-start="opacity-100"
                         x-transition:leave-end="opacity-0 scale-95"
-                        class="reveal group glass rounded-2xl overflow-hidden flex flex-col w-full text-left cursor-pointer transition-transform duration-300 ease-in-out hover:-translate-y-1.5 {{ ($cert['featured'] ?? false) ? 'ring-1 ring-sky-400 dark:ring-sky-500' : '' }}"
+                        class="reveal group glass relative rounded-2xl overflow-hidden flex flex-col w-full transition-transform duration-300 ease-in-out hover:-translate-y-1.5 {{ ($cert['featured'] ?? false) ? 'ring-1 ring-sky-400 dark:ring-sky-500' : '' }}"
                         data-direction="up" style="--reveal-delay: {{ ($index % 3) * 0.1 }}s">
                     {{-- Always-visible document preview --}}
                     <div class="relative w-full h-52 sm:h-56 overflow-hidden border-b border-gray-200/60 dark:border-white/10 bg-slate-100 dark:bg-slate-900/60">
@@ -720,7 +781,15 @@
                             View Certificate
                         </span>
                     </div>
-                </button>
+
+                    {{-- Full-card click target (keeps the markup valid while preserving the card look) --}}
+                    <button type="button"
+                            @click='openModal(allCerts[{{ $index }}])'
+                            aria-label="View certificate: {{ $cert['title'] }}"
+                            class="absolute inset-0 z-20 rounded-2xl cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-500">
+                        <span class="sr-only">View certificate: {{ $cert['title'] }}</span>
+                    </button>
+                </article>
             @endforeach
         </div>
 
@@ -734,8 +803,15 @@
             <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gray-100 dark:bg-slate-800/60 text-gray-400 dark:text-gray-500 mb-5">
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </div>
-            <h3 class="font-display text-xl font-bold text-gray-800 dark:text-white mb-2">No certificates found in this category</h3>
-            <p class="text-gray-500 dark:text-gray-400">Try switching to the "All" tab to browse everything.</p>
+            <h3 class="font-display text-xl font-bold text-gray-800 dark:text-white mb-2">
+                <span x-text="searchQuery ? 'No certificates match &quot;' + searchQuery + '&quot;' : 'No certificates found in this category'"></span>
+            </h3>
+            <p class="text-gray-500 dark:text-gray-400" x-text="searchQuery ? 'Try a different term, or clear the search to browse everything.' : 'Try switching to the All tab to browse everything.'"></p>
+            <button type="button"
+                    @click="resetSearch()"
+                    class="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-sky-500/50 text-sky-600 dark:text-sky-400 text-sm font-semibold hover:bg-sky-500/10 transition-colors">
+                <span x-text="searchQuery ? 'Clear search & show all' : 'Show all certificates'"></span>
+            </button>
         </div>
     </div>
     <div x-cloak
@@ -749,10 +825,10 @@
          x-ref="modal"
          role="dialog" aria-modal="true"
          :aria-label="cert ? cert.title : 'Certificate viewer'"
-         @mousedown="onBackdropClick($event)"
+         @click.self="closeModal()"
          class="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6">
         {{-- Backdrop --}}
-        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-md" aria-hidden="true"></div>
+        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-md" aria-hidden="true" @click="closeModal()"></div>
 
         {{-- Modal card --}}
         <div class="relative w-full max-w-4xl max-h-[92vh] flex flex-col modal-panel rounded-2xl overflow-hidden shadow-2xl"
@@ -878,7 +954,7 @@
                             </div>
                         </div>
                             <div class="pt-3 border-t border-gray-200 dark:border-white/10">
-                                <p class="text-sm text-gray-400 mb-4">Follow Me</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Follow Me</p>
                                 <div class="flex items-center gap-3" role="list" aria-label="Social media links">
                                     <a href="{{ $profile['github'] }}" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile" role="listitem"
                                        class="social-link flex items-center justify-center w-11 h-11 rounded-full glass text-gray-600 dark:text-gray-300 hover:text-white hover:bg-gradient-to-br hover:from-blue-600 hover:to-cyan-400 transition-all duration-300 ease-in-out">
@@ -904,22 +980,38 @@
                             <div class="flex flex-col gap-1">
                                 <label for="name" class="font-medium text-gray-700 dark:text-gray-300">Name</label>
                                 <input type="text" id="name" name="name" required minlength="2" maxlength="255" placeholder="Your name" autocomplete="name"
+                                       :aria-invalid="errors.name ? 'true' : 'false'"
+                                       aria-describedby="name-error"
+                                       @input="clearError('name')"
                                        class="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 px-4 py-3 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 focus:outline-none transition-all duration-300 ease-in-out">
+                                <p id="name-error" x-show="errors.name" x-text="errors.name"
+                                   class="text-sm font-medium text-red-600 dark:text-red-400"></p>
                             </div>
                             <div class="flex flex-col gap-1">
                                 <label for="email" class="font-medium text-gray-700 dark:text-gray-300">Email</label>
                                 <input type="email" id="email" name="email" required maxlength="255" placeholder="you@example.com" autocomplete="email"
+                                       :aria-invalid="errors.email ? 'true' : 'false'"
+                                       aria-describedby="email-error"
+                                       @input="clearError('email')"
                                        class="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 px-4 py-3 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 focus:outline-none transition-all duration-300 ease-in-out">
+                                <p id="email-error" x-show="errors.email" x-text="errors.email"
+                                   class="text-sm font-medium text-red-600 dark:text-red-400"></p>
                             </div>
                         </div>
 
                         <div class="flex flex-col gap-1">
                             <label for="message" class="font-medium text-gray-700 dark:text-gray-300">Message</label>
                             <textarea id="message" name="message" rows="5" required minlength="5" maxlength="5000" placeholder="Your message"
+                                      :aria-invalid="errors.message ? 'true' : 'false'"
+                                      aria-describedby="message-error"
+                                      @input="clearError('message')"
                                       class="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 px-4 py-3 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 focus:outline-none transition-all duration-300 ease-in-out resize-none"></textarea>
+                            <p id="message-error" x-show="errors.message" x-text="errors.message"
+                               class="text-sm font-medium text-red-600 dark:text-red-400"></p>
                         </div>
 
                         <button type="submit" :disabled="sending"
+                                :aria-busy="sending ? 'true' : 'false'"
                                 class="mt-2 w-full rounded-full bg-gradient-to-r from-blue-600 to-cyan-400 px-4 py-3.5 text-center text-lg font-semibold text-white shadow-lg shadow-blue-600/25 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-600/30 disabled:cursor-not-allowed disabled:opacity-60 transition-all duration-300 ease-in-out">
                             <template x-if="sending">
                                 <span class="inline-flex items-center space-x-2">
@@ -934,23 +1026,45 @@
                                 <span>Send Message</span>
                             </template>
                         </button>
+                        <p class="text-center text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                            Your details are only used to reply to your message.
+                        </p>
                     </form>
                 </div>
             </div>
 
-            {{-- Toast --}}
+            {{-- Toast (teleported to <body> so fixed positioning is viewport-relative) --}}
+            <template x-teleport="body">
             <div x-show="showToast" x-cloak
-                 role="status" aria-live="polite" aria-atomic="true"
-                 class="fixed right-4 top-6 z-[99999] flex items-center gap-2 rounded-lg px-4 py-3 font-semibold text-white shadow-xl"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-2 sm:translate-y-0 sm:translate-x-2"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:translate-x-0"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 :role="toastType === 'failure' ? 'alert' : 'status'"
+                 :aria-live="toastType === 'failure' ? 'assertive' : 'polite'"
+                 aria-atomic="true"
+                 @mouseenter="pauseToast()"
+                 @mouseleave="resumeToast()"
+                 @focusin="pauseToast()"
+                 @focusout="resumeToast()"
+                 class="fixed inset-x-4 top-20 sm:inset-x-auto sm:right-6 sm:top-24 z-[99999] flex items-start gap-3 rounded-xl px-4 py-3.5 font-semibold text-white shadow-2xl"
                  :class="{
                      'bg-emerald-500': toastType === 'success',
                      'bg-yellow-500': toastType === 'warning',
                      'bg-red-600': toastType === 'failure'
                  }">
-                <svg x-show="toastType === 'success'" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <svg x-show="toastType !== 'success'" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
-                <span class="text-sm" x-text="toastMessage"></span>
+                <svg x-show="toastType === 'success'" class="h-5 w-5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <svg x-show="toastType !== 'success'" class="h-5 w-5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
+                <span class="text-sm leading-relaxed flex-1" x-text="toastMessage"></span>
+                <button type="button" @click="dismissToast()"
+                        aria-label="Dismiss notification"
+                        class="-mr-2 -mt-2 flex items-center justify-center w-11 h-11 rounded-full text-white/80 hover:text-white hover:bg-white/15 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
             </div>
+            </template>
         </div>
     </div>
 </section>

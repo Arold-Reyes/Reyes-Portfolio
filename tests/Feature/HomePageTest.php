@@ -12,6 +12,9 @@ class HomePageTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Arold Mina Reyes');
+        $response->assertHeader('X-Content-Type-Options', 'nosniff');
+        $response->assertHeader('X-Frame-Options', 'SAMEORIGIN');
+        $response->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     }
 
     public function test_home_page_renders_the_portfolio_sections(): void
@@ -43,6 +46,28 @@ class HomePageTest extends TestCase
         $response->assertSee('Abra Quest');
         $response->assertSee('TaskManager');
         $response->assertSee('https://github.com/ReyesArold/task-manager');
+    }
+
+    public function test_home_page_includes_social_and_structured_data(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertSee('og:image', false);
+        $response->assertSee('images/og-image.png');
+        $response->assertSee('application/ld+json', false);
+        $response->assertSee('og:image:width', false);
+    }
+
+    public function test_home_page_exposes_accessible_ui_controls(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertSee('Back to top');
+        $response->assertSee('aria-controls="project-grid"', false);
+        $response->assertSee(':aria-pressed', false);
+        $response->assertSee('aria-describedby="name-error"', false);
+        $response->assertSee('Filter projects by category');
+        $response->assertSee('Filter certificates by category');
     }
 
     public function test_sitemap_and_robots_files_are_served(): void

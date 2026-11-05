@@ -185,4 +185,26 @@
 - **Action Taken:**  
   **Accepted as-is.** Updated `app/Http/Controllers/HomeController.php` and `tests/Feature/HomePageTest.php`. Verified with `php -l`, the test suite, and a local render of the projects section.
 
+---
+
+### Entry 18: Apply Portfolio Recommendations (Persistence, Headers, OG Image, A11y, CI)
+- **Prompt:**  
+  > "apply now the suggestions i just ask if there is an recomendations"
+- **AI Output Summary:**  
+  Applied the code-side recommendations from the audit. **Skills** now match the projects (Laravel, Tailwind CSS, Alpine.js, Git & GitHub, SQL Server, Bootstrap, Leaflet.js) and a new **Mobile Development** group lists Flutter, Dart, Android, and Material Design. **Contact submissions** are now persisted to a new `contact_messages` table (with `mail_sent` tracking) before the notification email is sent, so an inquiry is never lost if SMTP fails; the destination address is configurable via `config/portfolio.php` / `PORTFOLIO_CONTACT_EMAIL`. Contact failures now log only the exception class and message instead of a full trace. Added a **SecurityHeaders** middleware (nosniff, SAMEORIGIN, referrer policy, permissions policy, HSTS on HTTPS). Generated a branded **1200×630 OG image** (`public/images/og-image.png`) and wired it into the Open Graph/Twitter tags while keeping the portrait for JSON-LD. Added **swipe gestures** to the project gallery, screen-reader **live announcements** for project/certificate filter counts, `aria-current="page"` in the scroll spy, a footer **"Last updated"** date, and made the initial theme follow the OS preference when no preference is saved. Added a **GitHub Actions CI** workflow that builds assets and runs the tests.
+- **Action Taken:**  
+  **Accepted as-is.** Added `ContactMessage` model + migration, `SecurityHeaders` middleware, `config/portfolio.php`, `public/images/og-image.png`, and `.github/workflows/ci.yml`; updated `HomeController`, `ContactController`, `bootstrap/app.php`, `app.js`, `home.blade.php`, `layouts/app.blade.php`, `footer.blade.php`, `.env.example`, `README.md`, tests, and `PROMPT_LOG.md`. Verified with `php artisan migrate`, `npm run build`, and `php artisan test`. Account consolidation, hosting migration, domain/email, LinkedIn, and testimonials still require owner-side access or content.
+
+---
+
+### Entry 19: UI/UX Review and Interaction Polish
+- **Prompt:**  
+  > "now is the UI/UX of it give me a recomendations and apply them without affecting my project"
+- **AI Output Summary:**  
+  Reviewed the layout, navigation, project/certificate viewers, contact form, and theme CSS, then applied interaction and accessibility improvements without changing the content or visual identity. **Navigation:** moved the full desktop bar to the `lg` breakpoint (the overlay menu now covers tablets), added responsive short labels so the desktop bar no longer crowds, a focus-trapped mobile menu that restores focus to the hamburger on close, dynamic open/close labels, and a subtle navbar shadow once the page is scrolled. **Navigation flow:** anchor links now move keyboard focus to the destination section and update the URL hash. **Projects/certificates:** filter buttons expose `aria-pressed` state and `aria-controls`, gallery thumbnails use valid toggle-button semantics, certificate cards use a valid full-card click target with a concise accessible name, thumbnails gained `decoding="async"`, cards show a focus ring, and empty states offer a working "Show all" reset. **Contact form:** server validation errors now appear beneath each field with `aria-invalid`/`aria-describedby`, the first invalid field receives focus, the submit button reports `aria-busy`, a privacy note clarifies data use, and the toast is teleported to `<body>`, dismissible, pauses on hover/focus, and uses assertive announcements for failures. **Polish:** added a back-to-top control, synced native `color-scheme` with the active theme, improved "Follow Me" contrast, made the hero accent gradient theme-aware for stronger contrast, fixed modal backdrop clicks, prevented scroll chaining inside modals, and corrected card markup so block content is no longer nested inside buttons.
+- **Action Taken:**  
+  **Accepted as-is.** Updated `resources/css/app.css`, `resources/js/app.js`, `resources/views/layouts/app.blade.php`, `resources/views/partials/navbar.blade.php`, `resources/views/pages/home.blade.php`, `tests/Feature/HomePageTest.php`, `README.md`, and added `resources/views/partials/back-to-top.blade.php`. Verified with `npm run build`, `php artisan test` (12 tests), and a local render checking the new ARIA attributes and controls.
+
+
+
 

@@ -40,11 +40,22 @@ Alpine.store('theme', {
 // Mobile menu store
 Alpine.store('menu', {
     open: false,
+    lastFocused: null,
 
     init() {
-        // Allow Escape to close the menu regardless of where focus sits
+        // Escape closes the menu; Tab stays inside the dialog while it is open
         document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && this.open) this.close();
+            if (!this.open) return;
+            if (event.key === 'Escape') {
+                this.close();
+                return;
+            }
+            if (event.key === 'Tab') this.trapFocus(event);
+        });
+
+        // Close the overlay if the viewport grows into the desktop layout
+        window.addEventListener('resize', () => {
+            if (this.open && window.innerWidth >= 1024) this.close();
         });
     },
 
@@ -57,12 +68,46 @@ Alpine.store('menu', {
     },
 
     set(open) {
+        if (this.open === open) return;
         this.open = open;
         document.body.style.overflow = open ? 'hidden' : '';
+
         if (open) {
+            this.lastFocused = document.activeElement;
             setTimeout(() => {
-                document.querySelector('#mobile-menu button')?.focus();
+                const target = document.querySelector('#mobile-menu [data-menu-focus]')
+                    || document.querySelector('#mobile-menu a, #mobile-menu button');
+                if (target) target.focus();
             }, 50);
+        } else {
+            const previous = this.lastFocused;
+            this.lastFocused = null;
+            if (previous && typeof previous.focus === 'function' && document.contains(previous)) {
+                previous.focus();
+            }
+        }
+    },
+
+    trapFocus(event) {
+        const dialog = document.getElementById('mobile-menu');
+        if (!dialog) return;
+
+        const focusables = Array.from(dialog.querySelectorAll(
+            'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )).filter(el => el.offsetParent !== null);
+
+        if (!focusables.length) return;
+
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        const activeInside = dialog.contains(document.activeElement);
+
+        if (event.shiftKey && (document.activeElement === first || !activeInside)) {
+            event.preventDefault();
+            last.focus();
+        } else if (!event.shiftKey && (document.activeElement === last || !activeInside)) {
+            event.preventDefault();
+            first.focus();
         }
     }
 });
@@ -97,6 +142,11 @@ function initScrollSpy() {
             navLinks.forEach(link => {
                 const isActive = link.getAttribute('data-section') === id;
                 link.classList.toggle('active-link', isActive);
+                if (isActive) {
+                    link.setAttribute('aria-current', 'page');
+                } else {
+                    link.removeAttribute('aria-current');
+                }
             });
         });
     }, {
@@ -107,24 +157,50 @@ function initScrollSpy() {
     sections.forEach(section => observer.observe(section));
 }
 
-// Smooth scrolling for anchor links
+// Smooth scrolling for anchor links (also moves keyboard focus to the target)
 function initSmoothScroll() {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             const targetId = this.getAttribute('href');
             if (!targetId || targetId === '#') return;
-            const target = document.querySelector(targetId);
-            if (target) {
-                e.preventDefault();
-                const headerOffset = 80;
-                const elementPosition = target.getBoundingClientRect().top + window.pageYOffset;
-                window.scrollTo({
-                    top: elementPosition - headerOffset,
-                    behavior: 'smooth'
-                });
+
+            const target = document.getElementById(targetId.slice(1));
+            if (!target) return;
+
+            e.preventDefault();
+            const headerOffset = 80;
+            const elementPosition = target.getBoundingClientRect().top + window.pageYOffset;
+
+            window.scrollTo({
+                top: Math.max(elementPosition - headerOffset, 0),
+                behavior: reduceMotion ? 'auto' : 'smooth'
+            });
+
+            if (history.replaceState) {
+                history.replaceState(null, '', targetId);
             }
+
+            if (!target.hasAttribute('tabindex')) {
+                target.setAttribute('tabindex', '-1');
+            }
+            target.focus({ preventScroll: true });
         });
     });
+}
+
+// Add a subtle shadow to the sticky navbar once the page is scrolled
+function initNavbarShadow() {
+    const header = document.getElementById('site-header');
+    if (!header) return;
+
+    const onScroll = () => {
+        header.classList.toggle('is-scrolled', window.scrollY > 8);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
 }
 
 // Contact form
@@ -134,6 +210,14 @@ Alpine.data('contactModal', () => ({
     toastType: null,
     toastMessage: '',
     showToast: false,
+    errors: {},
+    _toastTimer: null,
+
+    clearError(field) {
+        if (this.errors[field]) {
+            this.errors[field] = '';
+        }
+    },
 
     async submitForm(event) {
         event.preventDefault();
@@ -144,6 +228,7 @@ Alpine.data('contactModal', () => ({
         const payload = Object.fromEntries(data.entries());
 
         this.sending = true;
+        this.errors = {};
         this.toastType = null;
         this.toastMessage = '';
         this.showToast = false;
@@ -161,10 +246,29 @@ Alpine.data('contactModal', () => ({
                 body: JSON.stringify(payload),
             });
 
-            const result = await response.json();
+            let result = {};
+            try {
+                result = await response.json();
+            } catch (error) {
+                result = {};
+            }
 
-            if (!response.ok || result.status !== 'success') {
+            if (response.status === 422 && result.errors) {
+                this.errors = Object.fromEntries(
+                    Object.entries(result.errors).map(([field, messages]) => [
+                        field,
+                        Array.isArray(messages) ? messages[0] : messages,
+                    ])
+                );
                 this.toastType = 'failure';
+                this.toastMessage = 'Please check the highlighted fields and try again.';
+
+                this.$nextTick(() => {
+                    const firstField = Object.keys(this.errors)[0];
+                    if (firstField) document.getElementById(firstField)?.focus();
+                });
+            } else if (!response.ok || result.status !== 'success') {
+                this.toastType = response.status === 429 ? 'warning' : 'failure';
                 this.toastMessage = result.message || 'Failed to send your message. Please try again later.';
             } else {
                 this.toastType = 'success';
@@ -177,10 +281,28 @@ Alpine.data('contactModal', () => ({
         } finally {
             this.sending = false;
             this.showToast = true;
-            setTimeout(() => {
-                this.showToast = false;
-            }, 4000);
+            this.startToastTimer(6000);
         }
+    },
+
+    startToastTimer(delay = 6000) {
+        clearTimeout(this._toastTimer);
+        this._toastTimer = setTimeout(() => {
+            this.showToast = false;
+        }, delay);
+    },
+
+    pauseToast() {
+        clearTimeout(this._toastTimer);
+    },
+
+    resumeToast() {
+        if (this.showToast) this.startToastTimer(4000);
+    },
+
+    dismissToast() {
+        clearTimeout(this._toastTimer);
+        this.showToast = false;
     }
 }));
 
@@ -191,6 +313,7 @@ Alpine.data('certViewer', (certs = []) => ({
     zoomed: false,
     lastFocused: null,
     activeFilter: 'all',
+    searchQuery: '',
     allCerts: certs,
 
     setFilter(key) {
@@ -198,14 +321,33 @@ Alpine.data('certViewer', (certs = []) => ({
         this.activeFilter = key;
     },
 
+    matchesSearch(cert) {
+        const q = (this.searchQuery || '').trim().toLowerCase();
+        if (!q) return true;
+        if (!cert) return false;
+        const haystack = [cert.title, cert.subtitle || '', cert.issuer || '', cert.badge || '', cert.date || '']
+            .join(' ').toLowerCase();
+        return haystack.includes(q);
+    },
+
     isVisible(cert) {
-        return this.activeFilter === 'all' || cert?.group === this.activeFilter;
+        if (!cert) return false;
+        const inFilter = this.activeFilter === 'all' || cert.group === this.activeFilter;
+        return inFilter && this.matchesSearch(cert);
+    },
+
+    countFor(key) {
+        if (key === 'all') return this.allCerts.length;
+        return this.allCerts.filter(cert => cert.group === key).length;
     },
 
     get filteredCount() {
-        return this.activeFilter === 'all'
-            ? this.allCerts.length
-            : this.allCerts.filter(cert => cert.group === this.activeFilter).length;
+        return this.allCerts.filter(cert => this.isVisible(cert)).length;
+    },
+
+    resetSearch() {
+        this.searchQuery = '';
+        this.activeFilter = 'all';
     },
 
     openModal(cert) {
@@ -274,6 +416,7 @@ Alpine.data('projectViewer', (projects = []) => ({
     lastFocused: null,
     activeFilter: 'all',
     allProjects: projects,
+    touchStartX: null,
 
     setFilter(key) {
         if (this.activeFilter === key) return;
@@ -376,14 +519,71 @@ Alpine.data('projectViewer', (projects = []) => ({
 
     setImage(index) {
         this.currentImageIndex = index;
+    },
+
+    onTouchStart(event) {
+        if (!this.hasImages) return;
+        this.touchStartX = event.changedTouches[0].clientX;
+    },
+
+    onTouchEnd(event) {
+        if (!this.hasImages || this.touchStartX === null) return;
+        const distance = event.changedTouches[0].clientX - this.touchStartX;
+        this.touchStartX = null;
+        if (Math.abs(distance) < 50) return;
+        distance < 0 ? this.nextImage() : this.prevImage();
     }
 }));
+
+// Back-to-top control
+Alpine.data('backToTop', () => ({
+    visible: false,
+
+    init() {
+        this._onScroll = () => {
+            this.visible = window.scrollY > 600;
+        };
+        window.addEventListener('scroll', this._onScroll, { passive: true });
+        this._onScroll();
+    },
+
+    scrollToTop() {
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+
+        const landing = document.getElementById('home');
+        if (landing) {
+            if (!landing.hasAttribute('tabindex')) landing.setAttribute('tabindex', '-1');
+            landing.focus({ preventScroll: true });
+        }
+    }
+}));
+
+// Scroll progress bar width update
+function initScrollProgress() {
+    const bar = document.getElementById('scroll-progress');
+    if (!bar) return;
+
+    const update = () => {
+        const doc = document.documentElement;
+        const total = doc.scrollHeight - doc.clientHeight;
+        const percent = total > 0 ? (window.scrollY / total) * 100 : 0;
+        bar.style.width = percent + '%';
+    };
+
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update, { passive: true });
+    update();
+}
 
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
     initScrollAnimations();
     initScrollSpy();
     initSmoothScroll();
+    initNavbarShadow();
+    initScrollProgress();
 });
 
 Alpine.start();

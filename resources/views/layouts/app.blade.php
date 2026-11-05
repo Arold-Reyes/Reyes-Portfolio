@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="Arold Mina Reyes — IT Student & Technical Instructor portfolio showcasing skills, projects, certifications, and experience.">
     <meta name="author" content="Arold Mina Reyes">
-    <meta name="color-scheme" content="dark light">
+    <meta name="color-scheme" content="light dark">
     <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
@@ -22,10 +22,11 @@
                 var dark;
                 if (storedTheme === 'light') {
                     dark = false;
-                } else if (storedTheme === 'dark' || window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                } else if (storedTheme === 'dark') {
                     dark = true;
                 } else {
-                    dark = true; // no saved preference -> dark by default
+                    // No saved preference: follow the OS. The catch below defaults to dark.
+                    dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                 }
                 document.documentElement.classList.remove('light', 'dark');
                 document.documentElement.classList.add(dark ? 'dark' : 'light');
@@ -56,7 +57,7 @@
             ['name' => 'About', 'id' => 'about'],
             ['name' => 'Skills', 'id' => 'skills'],
             ['name' => 'Projects', 'id' => 'projects'],
-            ['name' => 'Experience & Education', 'id' => 'education-experience'],
+            ['name' => 'Experience & Education', 'short' => 'Experience', 'id' => 'education-experience'],
             ['name' => 'Certifications', 'id' => 'certifications'],
             ['name' => 'Contact', 'id' => 'contact'],
         ];
@@ -64,10 +65,14 @@
 
     @include('partials.navbar')
 
-    <main id="main-content" role="main">
+    <main id="main-content" role="main" tabindex="-1">
         @yield('content')
     </main>
 
     @include('partials.footer')
+    @include('partials.back-to-top')
+
+    {{-- Scroll progress bar (full-width bar under the navbar) --}}
+    <div id="scroll-progress" class="fixed top-0 left-0 h-0.5 w-0 bg-gradient-to-r from-blue-600 to-cyan-400 z-[60]" aria-hidden="true"></div>
 </body>
 </html>

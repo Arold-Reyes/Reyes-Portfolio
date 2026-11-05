@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\RateLimiter;
 use App\Http\Requests\SendMailRequest;
 use App\Mail\PortfolioMail;
+use App\Models\ContactMessage;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 
 class ContactController extends Controller
 {
@@ -25,33 +26,55 @@ class ContactController extends Controller
 
         RateLimiter::hit('sendmail:' . $ip, 3600);
 
-        try {
-            $validated = $request->validated();
+        $validated = $request->validated();
 
-            Mail::to('torolreyes0615@gmail.com')->send(new PortfolioMail(
+        try {
+            $contactMessage = ContactMessage::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'message' => $validated['message'],
+                'ip_address' => $ip,
+                'user_agent' => mb_substr((string) $request->userAgent(), 0, 500),
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Contact message could not be stored', [
+                'exception' => $e::class,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'We could not save your message. Please try again or email me directly.',
+            ], 500);
+        }
+
+        try {
+            Mail::to(config('portfolio.contact_email'))->send(new PortfolioMail(
                 $validated['name'],
                 $validated['email'],
                 'Portfolio Contact Message',
                 $validated['message']
             ));
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Your message has been sent successfully.',
-            ], 200);
+            $contactMessage->forceFill(['mail_sent' => true])->save();
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('Contact mail failed', [
+            // The inquiry is safely stored, so the visitor does not need to resend it.
+            Log::error('Contact notification mail failed', [
+                'contact_message_id' => $contactMessage->id,
+                'exception' => $e::class,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
-                'status' => 'error',
-                'message' => config('app.debug')
-                    ? 'Failed to send email: ' . $e->getMessage()
-                    : 'Failed to send email. Please try again later.',
-            ], 500);
+                'status' => 'success',
+                'message' => 'Your message has been received. I will get back to you soon.',
+            ], 200);
         }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Your message has been sent successfully.',
+        ], 200);
     }
 
     /**

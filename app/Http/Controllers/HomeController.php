@@ -41,11 +41,27 @@ class HomeController extends Controller
                 'icon' => 'code',
                 'items' => [
                     'HTML / CSS',
-                    'C#',
                     'JavaScript',
                     'PHP',
+                    'Laravel',
+                    'C#',
                     'MySQL',
-                    'Flutter / Dart',
+                    'SQL Server',
+                    'Tailwind CSS',
+                    'Alpine.js',
+                    'Bootstrap',
+                    'Leaflet.js',
+                    'Git & GitHub',
+                ],
+            ],
+            [
+                'section' => 'Mobile Development',
+                'icon' => 'code',
+                'items' => [
+                    'Flutter',
+                    'Dart',
+                    'Android',
+                    'Material Design',
                 ],
             ],
             [
@@ -78,7 +94,7 @@ class HomeController extends Controller
                 'badge' => 'Technical Certification',
                 'group' => 'technical',
                 'featured' => true,
-                'previewImage' => null,
+                'previewImage' => '/certificates/previews/NC2.png',
                 'pdfUrl' => '/certificates/NC.pdf',
             ],
             [

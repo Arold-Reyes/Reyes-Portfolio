@@ -3,11 +3,14 @@
 namespace Tests\Feature;
 
 use App\Mail\PortfolioMail;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class ContactFormTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_contact_form_sends_an_email(): void
     {
         Mail::fake();
@@ -20,6 +23,12 @@ class ContactFormTest extends TestCase
 
         $response->assertOk()->assertJson(['status' => 'success']);
         Mail::assertSent(PortfolioMail::class);
+
+        $this->assertDatabaseHas('contact_messages', [
+            'name' => 'Jane Doe',
+            'email' => 'jane@example.com',
+            'mail_sent' => true,
+        ]);
     }
 
     public function test_contact_form_requires_valid_input(): void
@@ -37,6 +46,7 @@ class ContactFormTest extends TestCase
         ])->assertStatus(422)->assertJsonValidationErrors(['email']);
 
         Mail::assertNothingSent();
+        $this->assertDatabaseCount('contact_messages', 0);
     }
 
     public function test_contact_form_rejects_overly_long_input(): void
@@ -75,5 +85,7 @@ class ContactFormTest extends TestCase
         $this->postJson('/api/sendmail', $payload)
             ->assertStatus(429)
             ->assertJson(['status' => 'error']);
+
+        $this->assertDatabaseCount('contact_messages', 5);
     }
 }
