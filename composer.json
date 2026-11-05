@@ -31,6 +31,10 @@
         }
     },
     "scripts": {
+        "vercel": [
+            "composer install --no-dev --optimize-autoloader",
+            "@php artisan package:discover --ansi"
+        ],
         "setup": [
             "composer install",
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
