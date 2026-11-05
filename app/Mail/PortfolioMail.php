@@ -5,6 +5,7 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -30,7 +31,7 @@ class PortfolioMail extends Mailable
     {
         return new Envelope(
             subject: "Portfolio: {$this->subject}",
-            from: $this->email,
+            replyTo: $this->email ? [new Address($this->email, $this->name)] : null,
         );
     }
 
@@ -42,16 +43,8 @@ class PortfolioMail extends Mailable
                 'name' => $this->name,
                 'email' => $this->email,
                 'subject' => $this->subject,
-                'message' => $this->message,
+                'body' => $this->message,
             ],
         );
-    }
-
-    public function build()
-    {
-        return $this->view('emails.contact')
-            ->subject("Portfolio: {$this->subject}")
-            ->from($this->email)
-            ->to('torolreyes0615@gmail.com');
     }
 }

@@ -1,6 +1,72 @@
 @extends('layouts.app')
 
-@section('title', 'Arold Reyes - IT Student & Technical Instructor')
+@section('title', 'Arold Mina Reyes | IT Student & Technical Instructor')
+
+{{--
+    Open Graph / social sharing + structured data.
+    Uses url('/') so the canonical host comes from the actual request;
+    set APP_URL correctly in production so generated links never point at localhost.
+--}}
+@push('head')
+    @php
+        $portfolioUrl = url('/');
+        $portfolioDescription = 'Arold Mina Reyes — IT Student & Technical Instructor based in Abra, Philippines. Explore skills in IT infrastructure, networking, system administration, projects, certifications, and experience.';
+        $portfolioImage = asset('images/profile.jpg');
+    @endphp
+
+    <link rel="canonical" href="{{ $portfolioUrl }}">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Arold Mina Reyes — Portfolio">
+    <meta property="og:title" content="Arold Mina Reyes — IT Student & Technical Instructor">
+    <meta property="og:description" content="{{ $portfolioDescription }}">
+    <meta property="og:url" content="{{ $portfolioUrl }}">
+    <meta property="og:image" content="{{ $portfolioImage }}">
+    <meta property="og:image:alt" content="Arold Mina Reyes">
+    <meta property="og:locale" content="en_PH">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Arold Mina Reyes — IT Student & Technical Instructor">
+    <meta name="twitter:description" content="{{ $portfolioDescription }}">
+    <meta name="twitter:image" content="{{ $portfolioImage }}">
+
+    <script type="application/ld+json">
+        {!! json_encode([
+            '@context' => 'https://schema.org',
+            '@type' => 'Person',
+            'name' => 'Arold Mina Reyes',
+            'url' => $portfolioUrl,
+            'image' => $portfolioImage,
+            'jobTitle' => 'IT Student & Technical Instructor',
+            'description' => $portfolioDescription,
+            'email' => 'mailto:' . $profile['email'],
+            'telephone' => $profile['phoneHref'],
+            'address' => [
+                '@type' => 'PostalAddress',
+                'addressLocality' => 'Pilar',
+                'addressRegion' => 'Abra',
+                'addressCountry' => 'PH',
+            ],
+            'sameAs' => [
+                $profile['github'],
+                $profile['facebook'],
+                $profile['youtube'],
+            ],
+            'alumniOf' => [
+                '@type' => 'CollegeOrUniversity',
+                'name' => 'Data Center College of the Philippines - Bangued',
+            ],
+            'knowsAbout' => [
+                'IT Infrastructure',
+                'Networking',
+                'System Administration',
+                'Computer Systems Servicing',
+                'Web Development',
+                'Game Development',
+            ],
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
+    </script>
+@endpush
 
 @section('content')
 {{-- ============ HOME / HERO ============ --}}
@@ -159,24 +225,24 @@
 
             <div class="glass rounded-2xl p-8 space-y-6 flex flex-col justify-center">
                 <div>
-                    <p class="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-1">Location</p>
+                    <p class="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">Location</p>
                     <p class="text-gray-700 dark:text-gray-200 flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-sky-500" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                         Poblacion, Pilar, Abra
                     </p>
                 </div>
                 <div>
-                    <p class="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-1">Phone</p>
-                    <a href="tel:+639063555720" class="text-gray-700 dark:text-gray-200 flex items-center gap-2 hover:text-sky-600 dark:hover:text-sky-400 transition-colors">
+                    <p class="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">Phone</p>
+                    <a href="tel:{{ $profile['phoneHref'] }}" class="text-gray-700 dark:text-gray-200 flex items-center gap-2 hover:text-sky-600 dark:hover:text-sky-400 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-sky-500" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                        09063555720
+                        {{ $profile['phone'] }}
                     </a>
                 </div>
                 <div>
-                    <p class="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-1">Email</p>
-                    <a href="mailto:torolreyes0615@gmail.com" class="text-gray-700 dark:text-gray-200 flex items-center gap-2 hover:text-sky-600 dark:hover:text-sky-400 transition-colors break-all">
+                    <p class="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">Email</p>
+                    <a href="mailto:{{ $profile['email'] }}" class="text-gray-700 dark:text-gray-200 flex items-center gap-2 hover:text-sky-600 dark:hover:text-sky-400 transition-colors break-all">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-sky-500 shrink-0" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                        torolreyes0615@gmail.com
+                        {{ $profile['email'] }}
                     </a>
                 </div>
             </div>
@@ -260,7 +326,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($projects as $index => $project)
                 <article class="reveal glass rounded-2xl overflow-hidden flex flex-col w-full h-full transition-all duration-300 ease-in-out hover:-translate-y-1.5"
-                         x-show="isVisible({{ json_encode($project) }})"
+                         x-show="isVisible(allProjects[{{ $index }}])"
                          x-transition:enter="transition ease-out duration-300"
                          x-transition:enter-start="opacity-0 translate-y-3"
                          x-transition:enter-end="opacity-100 translate-y-0"
@@ -270,7 +336,7 @@
                          data-direction="up" style="--reveal-delay: {{ ($index % 3) * 0.1 }}s">
                     @if($project['thumbnail'])
                         <button type="button"
-                                @click='openModal({{ json_encode($project) }})'
+                                @click='openModal(allProjects[{{ $index }}])'
                                 class="block w-full text-left cursor-pointer group">
                             <div class="relative aspect-video overflow-hidden">
                                 <img src="{{ $project['thumbnail'] }}" alt="{{ $project['title'] }} screenshot"
@@ -281,7 +347,7 @@
                         </button>
                     @else
                         <button type="button"
-                                @click='openModal({{ json_encode($project) }})'
+                                @click='openModal(allProjects[{{ $index }}])'
                                 class="block w-full text-left cursor-pointer">
                             <div class="relative aspect-video flex items-center justify-center bg-gradient-to-br from-blue-600/15 to-cyan-400/15 dark:from-blue-500/10 dark:to-cyan-400/10 border-b border-gray-200/60 dark:border-white/10 overflow-hidden">
                                 <span class="w-14 h-14 flex items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-400 text-white shadow-lg shadow-blue-600/20">
@@ -293,7 +359,7 @@
                     @endif
                     <div class="p-6 flex flex-col flex-1">
                         <button type="button"
-                                @click='openModal({{ json_encode($project) }})'
+                                @click='openModal(allProjects[{{ $index }}])'
                                 class="text-left cursor-pointer">
                             <h3 class="font-display text-lg font-bold tracking-wide text-gray-900 dark:text-white mb-2 hover:text-sky-600 dark:hover:text-sky-400 transition-colors">{{ $project['title'] }}</h3>
                         </button>
@@ -303,8 +369,9 @@
                                 <span class="px-2.5 py-1 rounded-full bg-gray-100 dark:bg-slate-700/50 text-gray-600 dark:text-gray-300 text-xs font-medium">{{ $tech }}</span>
                             @endforeach
                         </div>
+                        <div class="flex flex-col gap-2 mt-auto">
                         @if($project['liveDemoUrl'] || $project['githubUrl'])
-                            <div class="flex flex-wrap gap-2 mb-4">
+                             <div class="flex flex-wrap items-center gap-2">
                                 @if($project['liveDemoUrl'])
                                     <a href="{{ $project['liveDemoUrl'] }}" target="_blank" rel="noopener noreferrer"
                                        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-500 text-white text-sm font-semibold shadow-md shadow-emerald-600/20 hover:shadow-emerald-600/40 hover:-translate-y-0.5 transition-all duration-300">
@@ -322,7 +389,7 @@
                             </div>
                         @endif
                         <button type="button"
-                                @click='openModal({{ json_encode($project) }})'
+                                @click='openModal(allProjects[{{ $index }}])'
                                 class="mt-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-400 text-white text-sm font-semibold shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 transition-all duration-300 cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 22h4a2 2 0 0 0 2-2V6l-6-6H6a2 2 0 0 0-2 2v4"/><path d="M10 14l2 2 4-4"/><path d="M8 21v-2a3 3 0 0 1 3-3h1"/></svg>
                             View Details &amp; Screenshots
@@ -567,7 +634,7 @@
 </section>
 
 {{-- ============ CERTIFICATIONS ============ --}}
-<section id="certifications" class="scroll-mt-20 py-24 md:py-28 relative overflow-hidden" x-data="certViewer()">
+<section id="certifications" class="scroll-mt-20 py-24 md:py-28 relative overflow-hidden" x-data="certViewer({{ Js::from($certifications) }})">
     <div class="absolute -bottom-24 right-1/4 -z-10 w-96 h-96 rounded-full bg-sky-500/10 blur-3xl dark:bg-sky-600/10"></div>
     <div class="glow-orb w-80 h-80 bg-blue-500/10 dark:bg-blue-600/15 top-20 -right-24" aria-hidden="true"></div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -575,45 +642,102 @@
             <div class="flex justify-center mb-6"><span class="section-badge">Milestones</span></div>
             <h2 class="font-display text-4xl md:text-5xl font-bold tracking-tight mb-4 text-gray-900 dark:text-white">Certificates &amp; Webinars</h2>
             <p class="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed tracking-wide">
-                Click any certificate to preview the full document and open or download the official PDF.
+                Every certificate is previewed below. Click any card to open the full document and download the official PDF.
             </p>
+        </div>
+
+        {{-- Category filter tabs --}}
+        <div class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-10 reveal">
+            @foreach($certificationFilters as $filter)
+                <button type="button"
+                        @click="setFilter('{{ $filter['key'] }}')"
+                        :class="activeFilter === '{{ $filter['key'] }}'
+                            ? 'bg-gradient-to-r from-blue-600 to-cyan-400 text-white shadow-lg shadow-blue-600/25 border-transparent'
+                            : 'bg-white dark:bg-slate-800/60 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/10 hover:border-sky-500/50 hover:text-sky-600 dark:hover:text-sky-400'"
+                        class="px-4 sm:px-5 py-2.5 rounded-full border text-sm font-semibold transition-all duration-300 ease-in-out cursor-pointer">
+                    {{ $filter['label'] }}
+                </button>
+            @endforeach
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($certifications as $index => $cert)
                 <button type="button"
-                        @click='openModal({{ json_encode($cert) }})'
-                        class="reveal glass rounded-2xl p-7 flex flex-col text-left w-full cursor-pointer transition-transform duration-300 ease-in-out hover:-translate-y-1.5 {{ ($cert['featured'] ?? false) ? 'ring-1 ring-sky-400 dark:ring-sky-500' : '' }}"
+                        @click='openModal(allCerts[{{ $index }}])'
+                        x-show="isVisible(allCerts[{{ $index }}])"
+                        x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 translate-y-3"
+                        x-transition:enter-end="opacity-100 translate-y-0"
+                        x-transition:leave="transition ease-in duration-200"
+                        x-transition:leave-start="opacity-100"
+                        x-transition:leave-end="opacity-0 scale-95"
+                        class="reveal group glass rounded-2xl overflow-hidden flex flex-col w-full text-left cursor-pointer transition-transform duration-300 ease-in-out hover:-translate-y-1.5 {{ ($cert['featured'] ?? false) ? 'ring-1 ring-sky-400 dark:ring-sky-500' : '' }}"
                         data-direction="up" style="--reveal-delay: {{ ($index % 3) * 0.1 }}s">
-                    <div class="flex items-start justify-between mb-4">
-                        <span class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-400 text-white shadow-lg shadow-blue-600/20 group-hover:scale-105 transition-transform duration-300 ease-in-out">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
-                        </span>
+                    {{-- Always-visible document preview --}}
+                    <div class="relative w-full h-52 sm:h-56 overflow-hidden border-b border-gray-200/60 dark:border-white/10 bg-slate-100 dark:bg-slate-900/60">
+                        @if(!empty($cert['previewImage']))
+                            <img src="{{ $cert['previewImage'] }}"
+                                 alt="Preview of the {{ $cert['title'] }} certificate"
+                                 loading="lazy" decoding="async"
+                                 class="h-full w-full object-contain p-2.5 transition-transform duration-500 ease-out group-hover:scale-[1.03]">
+                        @else
+                            <div class="h-full w-full flex flex-col items-center justify-center gap-2.5 bg-slate-100 dark:bg-slate-900/60 px-6 text-center">
+                                <span class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-400 text-white shadow-lg shadow-blue-600/20">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                </span>
+                                <span class="font-display text-sm font-semibold tracking-wide text-gray-800 dark:text-white">Protected document</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400 tracking-wide">Open to preview this certificate</span>
+                            </div>
+                        @endif
+
+                        {{-- Hover affordance --}}
+                        <div class="pointer-events-none absolute inset-0 flex items-end justify-end p-3 bg-gradient-to-t from-slate-900/45 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" aria-hidden="true">
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-xs font-semibold text-slate-900 shadow-lg shadow-slate-900/20">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>
+                                Click to preview
+                            </span>
+                        </div>
+
                         @if($cert['featured'] ?? false)
-                            <span class="px-2.5 py-1 rounded-full bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300 text-xs font-semibold">Featured</span>
+                            <span class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-sky-100/95 dark:bg-sky-900/80 text-sky-700 dark:text-sky-300 text-xs font-semibold shadow-sm backdrop-blur">Featured</span>
                         @endif
                     </div>
-                    @if(isset($cert['badge']))
-                        <span class="self-start mb-3 px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs font-semibold">{{ $cert['badge'] }}</span>
-                    @endif
-                    <h3 class="font-display text-lg font-bold tracking-wide text-gray-900 dark:text-white mb-1">{{ $cert['title'] }}</h3>
-                    @if(isset($cert['subtitle']))
-                        <p class="text-sm font-medium text-sky-600 dark:text-sky-400 mb-1">{{ $cert['subtitle'] }}</p>
-                    @endif
-                    <div class="mt-5 pt-4 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 tracking-wide border-t border-gray-200/60 dark:border-white/10">
-                        <span class="font-medium">{{ $cert['issuer'] }}</span>
-                        <span>{{ $cert['date'] }}</span>
+
+                    <div class="flex flex-col flex-1 p-6">
+                        @if(isset($cert['badge']))
+                            <span class="self-start mb-3 px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs font-semibold">{{ $cert['badge'] }}</span>
+                        @endif
+                        <h3 class="font-display text-lg font-bold tracking-wide text-gray-900 dark:text-white mb-1">{{ $cert['title'] }}</h3>
+                        @if(isset($cert['subtitle']))
+                            <p class="text-sm font-medium text-sky-600 dark:text-sky-400 mb-1">{{ $cert['subtitle'] }}</p>
+                        @endif
+                        <div class="mt-auto pt-4 flex items-center justify-between gap-3 text-sm text-gray-500 dark:text-gray-400 tracking-wide border-t border-gray-200/60 dark:border-white/10">
+                            <span class="min-w-0 font-medium truncate">{{ $cert['issuer'] }}</span>
+                            <span class="shrink-0">{{ $cert['date'] }}</span>
+                        </div>
+                        <span class="mt-4 inline-flex items-center justify-center gap-2 rounded-xl border border-blue-600/30 dark:border-blue-400/30 px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-300 transition-colors duration-300 ease-in-out group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-cyan-400 group-hover:text-white group-hover:border-transparent">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                            View Certificate
+                        </span>
                     </div>
-                    <span class="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-400 text-white text-sm font-semibold shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 transition-shadow">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 12 5 5 5-5"/><path d="M5 21h14"/></svg>
-                        View Certificate
-                    </span>
                 </button>
             @endforeach
         </div>
-    </div>
 
-    {{-- ===== CERTIFICATE / PDF VIEWER MODAL ===== --}}
+        {{-- Empty state --}}
+        <div x-show="filteredCount === 0"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-cloak
+             class="text-center py-16">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gray-100 dark:bg-slate-800/60 text-gray-400 dark:text-gray-500 mb-5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </div>
+            <h3 class="font-display text-xl font-bold text-gray-800 dark:text-white mb-2">No certificates found in this category</h3>
+            <p class="text-gray-500 dark:text-gray-400">Try switching to the "All" tab to browse everything.</p>
+        </div>
+    </div>
     <div x-cloak
          x-show="open"
          x-transition:enter="transition ease-out duration-300"
@@ -726,22 +850,22 @@
                 <div>
                     <h3 class="font-display text-2xl font-bold tracking-wide mb-7 text-gray-900 dark:text-white">Contact Details</h3>
                     <div class="space-y-6">
-                        <a href="tel:+639063555720" class="flex items-center gap-4 group">
+                        <a href="tel:{{ $profile['phoneHref'] }}" class="flex items-center gap-4 group">
                             <span class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-400 text-white shadow-lg shadow-blue-600/20 group-hover:scale-105 group-hover:shadow-xl transition-all duration-300 ease-in-out">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                             </span>
                             <div>
-                                <p class="text-sm text-gray-400">Phone</p>
-                                <p class="font-semibold text-gray-900 dark:text-white tracking-wide">09063555720</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Phone</p>
+                                <p class="font-semibold text-gray-900 dark:text-white tracking-wide">{{ $profile['phone'] }}</p>
                             </div>
                         </a>
-                        <a href="mailto:torolreyes0615@gmail.com" class="flex items-center gap-4 group">
+                        <a href="mailto:{{ $profile['email'] }}" class="flex items-center gap-4 group">
                             <span class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-400 text-white shadow-lg shadow-blue-600/20 group-hover:scale-105 group-hover:shadow-xl transition-all duration-300 ease-in-out">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                             </span>
                             <div class="min-w-0">
-                                <p class="text-sm text-gray-400">Email</p>
-                                <p class="font-semibold text-gray-900 dark:text-white break-all tracking-wide">torolreyes0615@gmail.com</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Email</p>
+                                <p class="font-semibold text-gray-900 dark:text-white break-all tracking-wide">{{ $profile['email'] }}</p>
                             </div>
                         </a>
                         <div class="flex items-center gap-4">
@@ -749,7 +873,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                             </span>
                             <div>
-                                <p class="text-sm text-gray-400">Location</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Location</p>
                                 <p class="font-semibold text-gray-900 dark:text-white tracking-wide">Poblacion, Pilar, Abra</p>
                             </div>
                         </div>
@@ -775,24 +899,24 @@
 
                 {{-- Right: contact form --}}
                 <div class="glass rounded-2xl p-6 md:p-8">
-                    <form @submit="submitForm($event)" class="flex flex-col gap-4" novalidate>
+                    <form @submit="submitForm($event)" class="flex flex-col gap-4">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="flex flex-col gap-1">
                                 <label for="name" class="font-medium text-gray-700 dark:text-gray-300">Name</label>
-                                <input type="text" id="name" name="name" required minlength="2" placeholder="Your name" autocomplete="off"
+                                <input type="text" id="name" name="name" required minlength="2" maxlength="255" placeholder="Your name" autocomplete="name"
                                        class="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 px-4 py-3 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 focus:outline-none transition-all duration-300 ease-in-out">
                             </div>
                             <div class="flex flex-col gap-1">
                                 <label for="email" class="font-medium text-gray-700 dark:text-gray-300">Email</label>
-                                <input type="email" id="email" name="email" required placeholder="you@example.com" autocomplete="off"
+                                <input type="email" id="email" name="email" required maxlength="255" placeholder="you@example.com" autocomplete="email"
                                        class="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 px-4 py-3 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 focus:outline-none transition-all duration-300 ease-in-out">
                             </div>
                         </div>
 
                         <div class="flex flex-col gap-1">
                             <label for="message" class="font-medium text-gray-700 dark:text-gray-300">Message</label>
-                            <textarea id="message" name="message" rows="5" required minlength="5" placeholder="Your message"
-                                      class="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 px-3 py-2.5 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:border-sky-500 focus:ring-sky-500 focus:outline-none resize-none"></textarea>
+                            <textarea id="message" name="message" rows="5" required minlength="5" maxlength="5000" placeholder="Your message"
+                                      class="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 px-4 py-3 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 focus:outline-none transition-all duration-300 ease-in-out resize-none"></textarea>
                         </div>
 
                         <button type="submit" :disabled="sending"
@@ -816,6 +940,7 @@
 
             {{-- Toast --}}
             <div x-show="showToast" x-cloak
+                 role="status" aria-live="polite" aria-atomic="true"
                  class="fixed right-4 top-6 z-[99999] flex items-center gap-2 rounded-lg px-4 py-3 font-semibold text-white shadow-xl"
                  :class="{
                      'bg-emerald-500': toastType === 'success',

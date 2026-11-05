@@ -75,21 +75,24 @@ html.theme-switching *::after {
     --ring-accent: rgba(56, 189, 248, 0.5);
 }
 
-/* Constellation canvas — fixed full-screen particle background */
+/* Constellation canvas — fixed full-screen particle background.
+   Sits behind all page content via a negative z-index so that `main` and
+   `footer` do not need their own stacking context. */
 #constellation-canvas {
     position: fixed;
     inset: 0;
     width: 100%;
     height: 100%;
-    z-index: 0;
+    z-index: -1;
     pointer-events: none;
     display: block;
 }
 
-/* Ensure page content sits above the background canvas */
+/* Keep page content above the background canvas without creating a stacking
+   context. A z-index here would trap fixed overlays (project/certificate
+   modals, toasts) inside `main`, letting the sticky navbar paint over them. */
 main, footer {
     position: relative;
-    z-index: 1;
 }
 
 ::selection {

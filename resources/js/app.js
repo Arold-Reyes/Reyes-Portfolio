@@ -40,11 +40,30 @@ Alpine.store('theme', {
 // Mobile menu store
 Alpine.store('menu', {
     open: false,
-    toggle() {
-        this.open = !this.open;
+
+    init() {
+        // Allow Escape to close the menu regardless of where focus sits
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && this.open) this.close();
+        });
     },
+
+    toggle() {
+        this.set(!this.open);
+    },
+
     close() {
-        this.open = false;
+        this.set(false);
+    },
+
+    set(open) {
+        this.open = open;
+        document.body.style.overflow = open ? 'hidden' : '';
+        if (open) {
+            setTimeout(() => {
+                document.querySelector('#mobile-menu button')?.focus();
+            }, 50);
+        }
     }
 });
 
@@ -118,23 +137,76 @@ Alpine.data('contactModal', () => ({
 
     async submitForm(event) {
         event.preventDefault();
+        if (this.sending) return;
 
-        this.toastType = 'warning';
-        this.toastMessage = 'Ongoing process — this message feature is still under development.';
-        this.showToast = true;
+        const form = event.target;
+        const data = new FormData(form);
+        const payload = Object.fromEntries(data.entries());
 
-        setTimeout(() => {
-            this.showToast = false;
-        }, 3000);
+        this.sending = true;
+        this.toastType = null;
+        this.toastMessage = '';
+        this.showToast = false;
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+        try {
+            const response = await fetch('/api/sendmail', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || result.status !== 'success') {
+                this.toastType = 'failure';
+                this.toastMessage = result.message || 'Failed to send your message. Please try again later.';
+            } else {
+                this.toastType = 'success';
+                this.toastMessage = result.message || 'Your message has been sent successfully.';
+                form.reset();
+            }
+        } catch (err) {
+            this.toastType = 'failure';
+            this.toastMessage = 'Failed to send your message. Please try again later.';
+        } finally {
+            this.sending = false;
+            this.showToast = true;
+            setTimeout(() => {
+                this.showToast = false;
+            }, 4000);
+        }
     }
 }));
 
 // Certificate viewer modal
-Alpine.data('certViewer', () => ({
+Alpine.data('certViewer', (certs = []) => ({
     open: false,
     cert: null,
     zoomed: false,
     lastFocused: null,
+    activeFilter: 'all',
+    allCerts: certs,
+
+    setFilter(key) {
+        if (this.activeFilter === key) return;
+        this.activeFilter = key;
+    },
+
+    isVisible(cert) {
+        return this.activeFilter === 'all' || cert?.group === this.activeFilter;
+    },
+
+    get filteredCount() {
+        return this.activeFilter === 'all'
+            ? this.allCerts.length
+            : this.allCerts.filter(cert => cert.group === this.activeFilter).length;
+    },
 
     openModal(cert) {
         this.lastFocused = document.activeElement;

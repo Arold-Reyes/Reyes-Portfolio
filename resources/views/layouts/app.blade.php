@@ -5,8 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="Arold Mina Reyes — IT Student & Technical Instructor portfolio showcasing skills, projects, certifications, and experience.">
+    <meta name="author" content="Arold Mina Reyes">
+    <meta name="color-scheme" content="dark light">
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
-    <title>@yield('title', 'Arold Reyes - IT Student & Technical Instructor')</title>
+    <link rel="apple-touch-icon" href="{{ asset('favicon.ico') }}">
+    <title>@yield('title', 'Arold Mina Reyes | IT Student & Technical Instructor')</title>
 
     {{-- Apply theme class immediately to prevent FOUC / bright flash
          Priority: saved preference > system preference > dark (default) --}}
@@ -38,6 +43,8 @@
     >
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    @stack('head')
 </head>
 <body class="font-sans antialiased theme-transition">
     {{-- Skip to main content link for keyboard / screen reader users --}}

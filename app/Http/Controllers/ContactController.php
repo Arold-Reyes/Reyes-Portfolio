@@ -19,7 +19,7 @@ class ContactController extends Controller
 
             return response()->json([
                 'status' => 'error',
-                'message' => 'Too many requests. Please try again in ' . $seconds . ' seconds.',
+                'message' => 'Too many requests. Please try again in ' . $this->humanDuration($seconds) . '.',
             ], 429);
         }
 
@@ -39,11 +39,44 @@ class ContactController extends Controller
                 'status' => 'success',
                 'message' => 'Your message has been sent successfully.',
             ], 200);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Contact mail failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to send email. Please try again later.',
+                'message' => config('app.debug')
+                    ? 'Failed to send email: ' . $e->getMessage()
+                    : 'Failed to send email. Please try again later.',
             ], 500);
         }
+    }
+
+    /**
+     * Format a duration in seconds into a human-readable string.
+     */
+    protected function humanDuration(int $seconds): string
+    {
+        if ($seconds < 60) {
+            return $seconds . ' second' . ($seconds === 1 ? '' : 's');
+        }
+
+        $minutes = (int) floor($seconds / 60);
+        if ($minutes < 60) {
+            return $minutes . ' minute' . ($minutes === 1 ? '' : 's');
+        }
+
+        $hours = (int) floor($seconds / 3600);
+        $remaining = $seconds % 3600;
+        $remMinutes = (int) floor($remaining / 60);
+
+        $parts = [$hours . ' hour' . ($hours === 1 ? '' : 's')];
+        if ($remMinutes > 0) {
+            $parts[] = $remMinutes . ' minute' . ($remMinutes === 1 ? '' : 's');
+        }
+
+        return implode(' ', $parts);
     }
 }

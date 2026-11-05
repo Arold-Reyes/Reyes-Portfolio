@@ -117,3 +117,72 @@
   Enhanced the portfolio with comprehensive responsive, accessibility, and ergonomic improvements. Added fluid typography via clamp() in CSS, gated all hover effects behind @media (hover: hover) and (pointer: fine) queries to prevent sticky touch states, enforced 44x44px minimum touch targets on all interactive elements for mobile, added a skip-to-content link for keyboard/screen-reader users, added semantic ARIA attributes (role, aria-label, aria-expanded, aria-controls, aria-modal) across navbar and modals, improved CLS prevention with aspect-ratio reservation on the hero profile image, added high-contrast mode support via @media (forced-colors), comprehensive reduced-motion support via @media (prefers-reduced-motion: reduce), print stylesheet, and focused-visible ring for keyboard navigation. Updated navbar with proper mobile menu ARIA attributes and touch-friendly sizing.
 - **Action Taken:**  
   **Accepted as-is.** Applied all changes across app.css, navbar.blade.php, footer.blade.php, app.blade.php, and home.blade.php.
+
+---
+
+### Entry 12: Correct LMS and Abra Quest Project Descriptions
+- **Prompt:**  
+  > "change the description of my Projects named LMS or Learning Management System it must be Loan Management Systen also the Abra Quest, this is an adventure 2d pixel game no Combat system, "also input this prompt to PROMPT_LOG""
+- **AI Output Summary:**  
+  Renamed the LMS project from "Learning Management System (LMS)" to "Loan Management System (LMS)" and rewrote its short and full descriptions to cover borrower records, loan releases, payments, amortization, and outstanding balances instead of courses, lessons, and learner progress. Updated Abra Quest from "2D RPG" to "Abra Quest — 2D Pixel Adventure", with descriptions now describing a 2D pixel adventure game focused on exploration, NPC interactions, and story, explicitly noting there is no combat system.
+- **Action Taken:**  
+  **Accepted as-is.** Updated the `$projects` array in `app/Http/Controllers/HomeController.php` and logged this prompt as Entry 12 in PROMPT_LOG.md.
+
+---
+
+### Entry 13: Always-Visible Certificate Thumbnails
+- **Prompt:**  
+  > "Also change the design for my Certificates $ Webinars whre the user will see the picture even without clicking it."
+- **AI Output Summary:**  
+  Redesigned the Certificates & Webinars cards so each one now shows a document thumbnail instead of only an icon, meaning visitors see the certificate itself without opening the modal. Generated first-page preview images from the certificate PDFs (rendered with pdf.js via the `pdf-to-img` package, then downscaled to 1100px and compressed to WebP with PHP GD, ~40–90 KB each) and stored them in `public/certificates/previews/`. Added a `previewImage` field to each certification in `HomeController` and rebuilt the card markup: fixed-height preview panel with the full document visible (`object-contain`), featured badge overlaid on the image, a hover "Click to preview" pill, and the existing metadata plus an outlined "View Certificate" button below. Updated the section intro copy to state that every certificate is previewed. Rebuilt the Vite/Tailwind assets so the new utility classes ship.
+- **Action Taken:**  
+  **Accepted as-is.** Updated `app/Http/Controllers/HomeController.php`, `resources/views/pages/home.blade.php`, added `public/certificates/previews/*.webp`, and ran `npm run build`. The TESDA NC II PDF (`NC.pdf`) is password-encrypted, so it cannot be rendered without the password and falls back to a "Protected document" panel.
+
+---
+
+### Entry 14: Add Three New Certificates with Previews
+- **Prompt:**  
+  > "in my Certificates add the following Certificates Located in public/certificates/
+  >
+  > named: Introduction_to_Modern_AI_certificate
+  > COP-WS11-2026-018 and DICT_CAR_Flagforce-Cybersecurity-Competetion-in-Abra_Certificate20261103_19165542 and there Previews"
+- **AI Output Summary:**  
+  Added three new entries to the `$certifications` array in `HomeController`, placed after the featured TESDA NC II card in reverse-chronological order: the 2026 DICT CAR FlagForce – Cybersecurity Competition Batch 2 (Oct 29, 2026, DICT CAR, Cybersecurity badge), Introduction to Modern AI (Oct 12, 2026, DICT-ITU DTC Initiative / Cisco Networking Academy, Technical Certification badge), and Understanding Startups & Getting Your Idea Ready for the Philippine Startup Challenge XI (Sept 7, 2026, DICT CAR, Webinar badge). Rendered the first page of each PDF with pdf.js via `pdf-to-img`, downscaled to 1100px, and compressed to WebP with PHP GD into `public/certificates/previews/` (`dict-flagforce-cybersecurity-competition-2026.webp`, `introduction-to-modern-ai-2026.webp`, `dict-startup-challenge-xi-webinar-2026.webp`). The FlagForce PDF is stored sideways, so its preview was rotated upright for readability while the PDF itself was left untouched.
+- **Action Taken:**  
+  **Accepted as-is.** Updated `app/Http/Controllers/HomeController.php` and added the three preview images. Verified with `php -l`, a local `php artisan serve` render (HTTP 200 with all three cards present), and the existing test suite. Temporary render scripts were deleted afterward.
+
+---
+
+### Entry 15: Add Bangued Ka-Fuel Project with Live Demo Link
+- **Prompt:**  
+  > "in my project part i add another project located at, public/images/projects/banguedkafuel.
+  >
+  > and here is the links for live demo of it, also add a description of it just like the other projects"
+  >
+  > Follow-up with the demo URL: `https://bangued-ka-fuel.infinityfree.me`,.
+- **AI Output Summary:**  
+  Inspected the six new screenshots in `public/images/projects/banguedkafuel_img/` and added a new project entry to the `$projects` array in `HomeController`, placed after the Portfolio Website: **Bangued Ka-Fuel** (Web Development, `web` group, "Web App" badge). Wrote a short description plus a full description based on what the screenshots show — an interactive Leaflet map of gas stations in Bangued, Abra with street/satellite/hybrid/CyclOSM layers, station search, browser location sharing, a brand legend with per-brand station counts and show/hide toggles, detail cards listing price per liter for each fuel type with confirmation dates, verified vs. approximate location flags, a directions button, volunteer-administered price data, and dedicated About and Privacy pages. Used `img_1.png` (the map overview) as the thumbnail with all six screenshots in the gallery, and set `liveDemoUrl` to the InfinityFree demo while leaving `githubUrl` empty.
+- **Action Taken:**  
+  **Accepted as-is.** Updated `app/Http/Controllers/HomeController.php` and logged this prompt as Entry 15 in PROMPT_LOG.md. Verified with `php -l` and confirmed all six image files resolve under `public/images/projects/banguedkafuel_img/`.
+
+---
+
+### Entry 16: Portfolio Audit Fixes (Setup, Tests, SEO, A11y, Performance)
+- **Prompt:**  
+  > "make me a suggestions of my portfolio, check it" followed by "implement it now, without affecting my project"
+- **AI Output Summary:**  
+  Audited the codebase and implemented the safe, high-impact fixes without changing the existing visual design or removing content: restored `.env.example` and the deleted `tests/` suite (home page, contact form, rate limiting, sitemap/robots); added the DICT OJT entry to the experience timeline; restored the certificate category filter (Technical / Cybersecurity / Webinars / Certificates); removed the repeated full-project JSON from card markup by referencing `allProjects[index]` / `allCerts[index]` (cutting the rendered page from ~247 KB of HTML); added canonical, Open Graph, Twitter Card, and `Person` JSON-LD metadata plus generated `sitemap.xml` and `robots.txt` routes; added server-side max lengths to the contact form; added an `aria-live` toast, native form validation, and mobile-menu scroll lock/focus handling; improved light-mode label contrast; and optimized the particle canvas (cached accent color, stopped the animation loop under reduced motion and in background tabs).
+- **Action Taken:**  
+  **Accepted as-is.** Updated `HomeController`, `SendMailRequest`, `app.js`, `constellation.js`, `web.php`, `home.blade.php`, `layouts/app.blade.php`, `README.md`, and `PROMPT_LOG.md`; restored `.env.example` and `tests/`. Verified with `php artisan test` and a local render. Project screenshots were left untouched, so image optimization remains a follow-up task.
+
+---
+
+### Entry 17: Add TaskManager Flutter Android App Project
+- **Prompt:**  
+  > "in my project page add the new project i just add located at public/images/projects/taskmanager-flutter-apk_img also put some short description on it. github URL: https://github.com/ReyesArold/task-manager"
+- **AI Output Summary:**  
+  Inspected the seven screenshots and added **TaskManager — Flutter Android App** to the `$projects` array in `HomeController` as a **Mobile Application** (`mobile` group, "Android App" badge). The short description covers accounts, priorities, due dates, categories, and the progress dashboard; the full description walks through registration and login, the dashboard counters, the new-task composer (title, description, due date, low/medium/high priority, optional category), the side menu with completed/overdue/today views, and the profile and settings screens. Used the dashboard screenshot as the thumbnail and ordered the gallery from dashboard → new task → login → registration → menu → settings → profile. Added a **Mobile Apps** filter tab to `$projectFilters`, added **Flutter / Dart** to the Programming & Web skills, and linked the GitHub repo.
+- **Action Taken:**  
+  **Accepted as-is.** Updated `app/Http/Controllers/HomeController.php` and `tests/Feature/HomePageTest.php`. Verified with `php -l`, the test suite, and a local render of the projects section.
+
+

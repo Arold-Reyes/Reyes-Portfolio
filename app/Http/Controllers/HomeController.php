@@ -7,19 +7,12 @@ class HomeController extends Controller
     public function index()
     {
         $profile = [
-            'name' => 'Arold Mina Reyes',
-            'shortName' => 'Arold Reyes',
-            'fullTitle' => 'Bachelor of Science in Information Technology (4th Year Student)',
-            'objective' => 'Seeking an On-the-Job Training (OJT) / Internship position in IT Infrastructure, Networking, or System Administration.',
-            'tagline' => 'IT Student & Technical Instructor',
             'phone' => '09063555720',
             'phoneHref' => '+639063555720',
             'email' => 'torolreyes0615@gmail.com',
-            'location' => 'Poblacion, Pilar, Abra',
             'github' => 'https://github.com/Arold-Reyes',
             'facebook' => 'https://www.facebook.com/reyes.arold.92',
             'youtube' => 'https://www.youtube.com/@s4db0igaming76',
-            'resume' => '/resume/reyesresume.jpg',
         ];
 
         $skills = [
@@ -52,6 +45,7 @@ class HomeController extends Controller
                     'JavaScript',
                     'PHP',
                     'MySQL',
+                    'Flutter / Dart',
                 ],
             ],
             [
@@ -82,8 +76,41 @@ class HomeController extends Controller
                 'issuer' => 'TESDA',
                 'date' => '2025',
                 'badge' => 'Technical Certification',
+                'group' => 'technical',
                 'featured' => true,
+                'previewImage' => null,
                 'pdfUrl' => '/certificates/NC.pdf',
+            ],
+            [
+                'id' => 'dict-flagforce-cybersecurity-competition-2026',
+                'title' => '2026 DICT CAR FlagForce - Cybersecurity Competition Batch 2',
+                'subtitle' => '"Find the Flag, Defend the Future"',
+                'issuer' => 'DICT CAR',
+                'date' => 'Oct 29, 2026',
+                'badge' => 'Cybersecurity',
+                'group' => 'cybersecurity',
+                'previewImage' => '/certificates/previews/dict-flagforce-cybersecurity-competition-2026.webp',
+                'pdfUrl' => '/certificates/DICT_CAR_Flagforce-Cybersecurity-Competetion-in-Abra_Certificate20261103_19165542.pdf',
+            ],
+            [
+                'id' => 'introduction-to-modern-ai-2026',
+                'title' => 'Introduction to Modern AI',
+                'issuer' => 'DICT-ITU DTC Initiative / Cisco Networking Academy',
+                'date' => 'Oct 12, 2026',
+                'badge' => 'Technical Certification',
+                'group' => 'technical',
+                'previewImage' => '/certificates/previews/introduction-to-modern-ai-2026.webp',
+                'pdfUrl' => '/certificates/Introduction_to_Modern_AI_certificate_.pdf',
+            ],
+            [
+                'id' => 'dict-startup-challenge-xi-webinar-2026',
+                'title' => 'Understanding Startups & Getting Your Idea Ready for the Philippine Startup Challenge XI',
+                'issuer' => 'DICT CAR',
+                'date' => 'Sept 7, 2026',
+                'badge' => 'Webinar',
+                'group' => 'webinar',
+                'previewImage' => '/certificates/previews/dict-startup-challenge-xi-webinar-2026.webp',
+                'pdfUrl' => '/certificates/COP-WS11-2026-018.pdf',
             ],
             [
                 'id' => 'dict-data-analytics-2025',
@@ -91,6 +118,8 @@ class HomeController extends Controller
                 'issuer' => 'DICT CAR',
                 'date' => 'Dec 2025',
                 'badge' => 'Technical Certification',
+                'group' => 'technical',
+                'previewImage' => '/certificates/previews/dict-data-analytics-2025.webp',
                 'pdfUrl' => '/certificates/Arold_M_Reyes_Data_Analytics_Certificate.pdf',
             ],
             [
@@ -99,6 +128,8 @@ class HomeController extends Controller
                 'issuer' => 'DICT CAR',
                 'date' => 'June 2025',
                 'badge' => 'Webinar',
+                'group' => 'webinar',
+                'previewImage' => '/certificates/previews/dict-ict-career-prep-2025.webp',
                 'pdfUrl' => '/certificates/Empowering_the_next_Gen_ICT_Career_Prep_Essentials_Webinar.pdf',
             ],
             [
@@ -107,6 +138,8 @@ class HomeController extends Controller
                 'issuer' => 'CHED SEEDLING Project / DICT CAR',
                 'date' => 'July 23, 2026',
                 'badge' => 'Cybersecurity',
+                'group' => 'cybersecurity',
+                'previewImage' => '/certificates/previews/ched-seedling-cyber-awareness-2026.webp',
                 'pdfUrl' => '/certificates/Arold_M_Reyes_CHED_Certificate.pdf',
             ],
             [
@@ -115,6 +148,8 @@ class HomeController extends Controller
                 'issuer' => 'Webinar Certificate',
                 'date' => '2025',
                 'badge' => 'Webinar',
+                'group' => 'webinar',
+                'previewImage' => '/certificates/previews/webinar-online-safety-netiquette.webp',
                 'pdfUrl' => '/certificates/76.pdf',
             ],
             [
@@ -123,6 +158,8 @@ class HomeController extends Controller
                 'issuer' => 'Webinar Certificate',
                 'date' => '2025',
                 'badge' => 'Cybersecurity',
+                'group' => 'cybersecurity',
+                'previewImage' => '/certificates/previews/webinar-industrial-cybersecurity.webp',
                 'pdfUrl' => '/certificates/Industrial_Cybersecurity_Essentials_certificate_torolreyes0615-gmail-com_3bbac569-ccb2-4af1-b5b9-fc12e81cb13e.pdf',
             ],
             [
@@ -131,11 +168,25 @@ class HomeController extends Controller
                 'issuer' => 'Certificate of Appearance',
                 'date' => '2026',
                 'badge' => 'Certificate',
+                'group' => 'certificate',
+                'previewImage' => '/certificates/previews/certificate-of-appearance.webp',
                 'pdfUrl' => '/certificates/Certificate_of_Appearance_Arold_M_Reyes.pdf',
             ],
         ];
 
         $timeline = [
+            [
+                'kind' => 'work',
+                'title' => 'On-the-Job Training (OJT)',
+                'subtitle' => 'Department of Information and Communications Technology (DICT)',
+                'type' => 'OJT',
+                'date' => '2026 - Present',
+                'sort' => 2026,
+                'points' => [
+                    'Applying hands-on IT infrastructure, networking, and system administration skills in a real-world government environment.',
+                    'Gaining practical experience with day-to-day ICT operations and technical support.',
+                ],
+            ],
             [
                 'kind' => 'work',
                 'title' => 'Instructor / Trainer',
@@ -204,13 +255,56 @@ class HomeController extends Controller
                 'githubUrl' => 'https://github.com/Arold-Reyes/Reyes-Portfolio',
             ],
             [
+                'id' => 'bangued-ka-fuel',
+                'title' => 'Bangued Ka-Fuel',
+                'category' => 'Web Development',
+                'group' => 'web',
+                'badge' => 'Web App',
+                'shortDescription' => 'An interactive community map of gas stations in Bangued, Abra, with the fuel prices recorded for each one.',
+                'fullDescription' => 'Bangued Ka-Fuel is a community-maintained web map of the gasoline stations in and around Bangued, Abra. Visitors can browse stations on a Leaflet map with street, satellite, hybrid, and CyclOSM layers, search for a station by name, or share their location to find the nearest fuel stops. A brand legend lists each station brand with its station count and lets you show or hide brands, and tapping any marker opens a detail card with the address, barangay, opening hours, and price per liter for every fuel type (diesel, premium, unleaded, V-Power, and others), plus how recently those prices were confirmed. Each pin also carries a confidence flag so users can tell a verified location from an approximate one, and a directions button opens turn-by-turn navigation. Prices and station details are entered by volunteer administrators, so the site also ships with plain-language About and Privacy pages that explain exactly what the map does and how little it collects about visitors.',
+                'technologies' => ['PHP', 'MySQL', 'Leaflet.js', 'OpenStreetMap', 'JavaScript', 'Tailwind CSS'],
+                'thumbnail' => '/images/projects/banguedkafuel_img/img_1.png',
+                'galleryImages' => [
+                    '/images/projects/banguedkafuel_img/img_1.png',
+                    '/images/projects/banguedkafuel_img/img_2.png',
+                    '/images/projects/banguedkafuel_img/img_3.png',
+                    '/images/projects/banguedkafuel_img/img_4.png',
+                    '/images/projects/banguedkafuel_img/img_5.png',
+                    '/images/projects/banguedkafuel_img/img_6.png',
+                ],
+                'liveDemoUrl' => 'https://bangued-ka-fuel.infinityfree.me',
+                'githubUrl' => 'https://github.com/ReyesArold/bangued-ka-fuel',
+            ],
+            [
+                'id' => 'task-manager-flutter',
+                'title' => 'TaskManager — Flutter Android App',
+                'category' => 'Mobile Application',
+                'group' => 'mobile',
+                'badge' => 'Android App',
+                'shortDescription' => 'A Flutter task manager for Android with accounts, priorities, due dates, categories, and a progress dashboard.',
+                'fullDescription' => 'TaskManager is an Android task management app built with Flutter and Dart. It includes user registration and login, a dashboard with total, to-do, and completed counters, and a task composer where each task can have a title, description, due date, a low / medium / high priority, and an optional category. A side menu gives quick access to completed, overdue, and today\'s tasks, while the profile screen supports a profile photo and personal details. Settings cover language, dark mode, notifications, password changes, and privacy. The app was built as a mobile-first companion for planning day-to-day work.',
+                'technologies' => ['Flutter', 'Dart', 'Android', 'Material Design'],
+                'thumbnail' => '/images/projects/taskmanager-flutter-apk_img/img_3.png',
+                'galleryImages' => [
+                    '/images/projects/taskmanager-flutter-apk_img/img_3.png',
+                    '/images/projects/taskmanager-flutter-apk_img/img_6.png',
+                    '/images/projects/taskmanager-flutter-apk_img/img_1.png',
+                    '/images/projects/taskmanager-flutter-apk_img/img_2.png',
+                    '/images/projects/taskmanager-flutter-apk_img/img_4.png',
+                    '/images/projects/taskmanager-flutter-apk_img/img_5.png',
+                    '/images/projects/taskmanager-flutter-apk_img/img_7.png',
+                ],
+                'liveDemoUrl' => null,
+                'githubUrl' => 'https://github.com/ReyesArold/task-manager',
+            ],
+            [
                 'id' => 'lms',
-                'title' => 'Learning Management System (LMS)',
+                'title' => 'Loan Management System (LMS)',
                 'category' => 'Desktop Application',
                 'group' => 'desktop',
                 'badge' => 'Offline App',
-                'shortDescription' => 'A desktop learning management system for managing courses, lessons, and student progress.',
-                'fullDescription' => 'A Learning Management System built as a Windows desktop application. It lets instructors create and organize course modules, track learner progress, and manage enrolments through a straightforward graphical interface backed by a relational database.',
+                'shortDescription' => 'A desktop loan management system for handling borrowers, loan releases, payments, and balances.',
+                'fullDescription' => 'A Loan Management System built as a Windows desktop application. It lets staff register clients, create and release loans, record payments and amortization schedules, and monitor outstanding balances through a straightforward graphical interface backed by a relational database.',
                 'technologies' => ['C#', 'Microsoft Visual Studio 2010', 'Windows Forms', 'SQL Server'],
                 'thumbnail' => '/images/projects/lms_img/2_dashboard.png',
                 'galleryImages' => [
@@ -263,12 +357,12 @@ class HomeController extends Controller
             ],
             [
                 'id' => 'abra-quest-rpg',
-                'title' => 'Abra Quest — 2D RPG',
+                'title' => 'Abra Quest — 2D Pixel Adventure',
                 'category' => 'Game Development',
                 'group' => 'game',
                 'badge' => 'Game',
-                'shortDescription' => 'An ongoing 2D role-playing game set in the province of Abra, built in Unity.',
-                'fullDescription' => 'Abra Quest is an in-progress 2D role-playing game developed in Unity (C#). It features a custom game world inspired by the province of Abra, character movement and combat systems, tile-based level design, and an evolving story. Actively developing gameplay mechanics and level assets.',
+                'shortDescription' => 'An ongoing 2D pixel adventure game set in the province of Abra, built in Unity.',
+                'fullDescription' => 'Abra Quest is an in-progress 2D pixel adventure game developed in Unity (C#). It features a custom pixel-art world inspired by the province of Abra, character movement and exploration, NPC interactions, tile-based level design, and an evolving story. The game has no combat system; gameplay focuses on exploration and adventure. Actively developing gameplay mechanics and level assets.',
                 'technologies' => ['C#', 'Unity', '2D Game Development', 'Tilemap'],
                 'thumbnail' => '/images/projects/abraquest_img/1_mainmenu.png',
                 'galleryImages' => [
@@ -280,7 +374,7 @@ class HomeController extends Controller
                     '/images/projects/abraquest_img/6_npcinteraction.png',
                     '/images/projects/abraquest_img/7_pause.png',
                 ],
-                'liveDemoUrl' => null,
+                'liveDemoUrl' => 'https://blaz3333.itch.io/abra-quest',
                 'githubUrl' => null,
             ],
             [
@@ -341,9 +435,18 @@ class HomeController extends Controller
         $projectFilters = [
             ['key' => 'all', 'label' => 'All'],
             ['key' => 'web', 'label' => 'Web Projects'],
+            ['key' => 'mobile', 'label' => 'Mobile Apps'],
             ['key' => 'game', 'label' => 'Games'],
             ['key' => 'desktop', 'label' => 'Offline / Desktop Apps'],
             ['key' => 'tools', 'label' => 'Utility Tools'],
+        ];
+
+        $certificationFilters = [
+            ['key' => 'all', 'label' => 'All'],
+            ['key' => 'technical', 'label' => 'Technical Certifications'],
+            ['key' => 'cybersecurity', 'label' => 'Cybersecurity'],
+            ['key' => 'webinar', 'label' => 'Webinars'],
+            ['key' => 'certificate', 'label' => 'Certificates'],
         ];
 
         return view('pages.home', compact(
@@ -351,6 +454,7 @@ class HomeController extends Controller
             'skills',
             'timeline',
             'certifications',
+            'certificationFilters',
             'projects',
             'projectFilters'
         ));
