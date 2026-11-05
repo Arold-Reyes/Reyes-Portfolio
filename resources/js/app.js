@@ -306,6 +306,29 @@ Alpine.data('contactModal', () => ({
     }
 }));
 
+// Profile photo cards: hover previews a photo in front, click pins it there
+Alpine.data('profileCards', (images = []) => ({
+    images,
+    front: 0,
+    preview: null,
+
+    isFront(index) {
+        return index === (this.preview !== null ? this.preview : this.front);
+    },
+
+    setPreview(index) {
+        this.preview = index;
+    },
+
+    clearPreview() {
+        this.preview = null;
+    },
+
+    pin(index) {
+        this.front = index;
+    }
+}));
+
 // Certificate viewer modal
 Alpine.data('certViewer', (certs = []) => ({
     open: false,

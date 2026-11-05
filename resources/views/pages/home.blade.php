@@ -154,18 +154,68 @@
                 <div class="reveal" data-direction="right" style="--reveal-delay: 0.2s">
                     <div class="glass rounded-[2rem] p-6 md:p-10">
                         @php
-                            $hasHeroImg = file_exists(public_path('images/profile.jpg'));
+                            $heroImages = [];
+                            foreach (['images/profile.jpg', 'images/profile2.JPG'] as $img) {
+                                if (file_exists(public_path($img))) {
+                                    $heroImages[] = asset($img);
+                                }
+                            }
+                            $hasHeroImg = !empty($heroImages);
                         @endphp
                         <div class="profile-image-wrapper mx-auto">
                         @if($hasHeroImg)
-                            <img
-                                src="{{ asset('images/profile.jpg') }}"
-                                alt="Arold Mina Reyes"
-                                class="rounded-2xl w-full h-full object-cover object-center"
-                                width="288" height="288"
-                                fetchpriority="high"
-                                decoding="async"
-                            >
+                            @if(count($heroImages) > 1)
+                                <div class="profile-cards relative w-full h-full" x-data="profileCards({{ Js::from($heroImages) }})">
+                                    <button type="button"
+                                            @click="pin(0)"
+                                            @mouseenter="setPreview(0)"
+                                            @mouseleave="clearPreview()"
+                                            @focus="setPreview(0)"
+                                            @blur="clearPreview()"
+                                            :aria-pressed="front === 0 ? 'true' : 'false'"
+                                            aria-label="Bring first profile photo to front"
+                                            class="profile-card profile-card-left"
+                                            :class="{ 'is-front': isFront(0) }">
+                                        <img
+                                            src="{{ $heroImages[0] }}"
+                                            alt=""
+                                            aria-hidden="true"
+                                            width="288" height="288"
+                                            fetchpriority="high"
+                                            decoding="async"
+                                        >
+                                    </button>
+                                    <button type="button"
+                                            @click="pin(1)"
+                                            @mouseenter="setPreview(1)"
+                                            @mouseleave="clearPreview()"
+                                            @focus="setPreview(1)"
+                                            @blur="clearPreview()"
+                                            :aria-pressed="front === 1 ? 'true' : 'false'"
+                                            aria-label="Bring second profile photo to front"
+                                            class="profile-card profile-card-right"
+                                            :class="{ 'is-front': isFront(1) }">
+                                        <img
+                                            src="{{ $heroImages[1] }}"
+                                            alt=""
+                                            aria-hidden="true"
+                                            width="288" height="288"
+                                            decoding="async"
+                                            loading="lazy"
+                                        >
+                                    </button>
+                                    <span class="sr-only" aria-live="polite" x-text="'Portfolio photo ' + (front + 1) + ' of ' + images.length + ' in front'"></span>
+                                </div>
+                            @else
+                                <img
+                                    src="{{ $heroImages[0] }}"
+                                    alt="Arold Mina Reyes"
+                                    class="rounded-2xl w-full h-full object-cover object-center"
+                                    width="288" height="288"
+                                    fetchpriority="high"
+                                    decoding="async"
+                                >
+                            @endif
                         @else
                             <div class="flex items-center justify-center w-full h-full rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-400 text-white text-7xl font-black font-display" aria-label="AR">
                                 AR
