@@ -268,7 +268,7 @@ class HomeController extends Controller
                     '/images/projects/portfolio_img/Portfolio_03.png',
                 ],
                 'liveDemoUrl' => '/',
-                'githubUrl' => 'https://github.com/Arold-Reyes/Reyes-Portfolio',
+                'githubUrl' => 'https://github.com/ReyesArold/Reyes-Portfolio',
             ],
             [
                 'id' => 'bangued-ka-fuel',
