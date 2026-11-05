@@ -1,0 +1,17 @@
+{
+  "framework": null,
+  "buildCommand": "composer install --no-dev --optimize-autoloader && npm install --legacy-peer-deps && npm run build",
+  "installCommand": "npm install --legacy-peer-deps",
+  "outputDirectory": null,
+  "builds": [
+    { "src": "package.json", "use": "@vercel/static-build" },
+    { "src": "public/index.php", "use": "vercel-php@latest" }
+  ],
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/public/index.php" }
+  ],
+  "functions": {
+    "public/index.php": { "memory": 1024, "maxDuration": 60 }
+  }
+}

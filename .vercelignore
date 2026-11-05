@@ -1,0 +1,39 @@
+# VCS + editor
+.git
+.github
+.idea
+.vscode
+.gitignore
+.gitattributes
+
+# PHP project files
+vendor
+.env
+.env.*
+!.env.example
+.phpunit.result.cache
+storage/logs
+storage/framework/cache
+storage/framework/sessions
+storage/framework/views
+
+# Node
+node_modules
+
+# Build output (generated on Vercel)
+public/build
+public/hot
+
+# Tests / docs / config
+tests
+phpunit.xml
+README.md
+PROMPT_LOG.md
+AGENTS.md
+CLAUDE.md
+composer.lock
+package-lock.json
+postcss.config.js
+
+# Certificates / images are served from public/ — keep them
+# public/certificates and public/images are intentionally NOT ignored
